@@ -18,7 +18,7 @@ from kaggle.
 This dataset contains information for 3 million flights and is sampled from approximately 30 million flights between January 2019 to August 2023.
 
 We will use the following columns in the dataset:
-- `AIRLINE_CODE`, `ORIGIN_CITY`, `DEST_CITY`, `FL_DATE` for essential information about each flight and filter.
+- `AIRLINE`, `AIRLINE_CODE`, `ORIGIN_CITY`, `ORIGIN`, `DEST_CITY`, `DEST`, `FL_DATE` for essential information about each flight and filter.
 - `AIR_TIME` for flight time.
 - `ARR_DELAY` for arrival delay.
 
