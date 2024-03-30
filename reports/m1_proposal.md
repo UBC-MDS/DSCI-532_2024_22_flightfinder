@@ -1,17 +1,15 @@
 ### Section 1: Motivation and Purpose
 
-#### Our Role: Aviation Data Analytics Firm
-#### Target Audience: Airline Operations Managers & Individual Travelers
-In the aviation industry, flight delays can have far-reaching consequences, not just for airline operations and financials, but also for travelers' schedules and satisfaction. Airline operations managers require in-depth analysis to streamline flight schedules and enhance operational efficiency. Meanwhile, individual travelers seek reliable information to plan their journeys effectively and avoid disruptions.
+#### Our Role: Travel planning platform
+#### Target Audience: Individual Travelers
+Traveling, whether for leisure or business, requires careful planning. Delays are more than just minor inconveniences; they can disrupt connections, lead to missed engagements, and even affect accommodation plans. For individuals planning their travels, having access to historical flight data can provide an edge in making informed decisions to minimize disruptions.
 
-Our dashboard utilizes the "flights.csv" dataset to address these diverse needs by providing:
+Our dashboard is specifically designed for travelers, enabling them to navigate the complexities of air travel with ease and confidence:
 
-- Temporal Trend Analysis: To help all users identify the best times to fly and anticipate potential delays.
-- Reliability Ratings: Travelers can compare delay records of different airlines, helping them choose the carrier with the best on-time performance for their needs.
-- Airline Performance Benchmarking: Enabling industry professionals to assess and improve operational strategies, while also guiding travelers in choosing reliable airlines.
-- Delay Analysis: Offering insights into service quality and delay patterns, assisting airlines in addressing issues and travelers in making informed choices.
-- Route Efficiency Metrics: Assisting airlines and analysts in optimizing route planning, and informing travelers about typical flight durations and potential delays.
-- Airport Performance Indicators: Equipping airports with data to enhance their operations and informing travelers about airports with better on-time records.
+- Historical Delay Patterns: Travelers can identify which times have the highest incidence of delays to avoid booking flights during those periods.
+- Airline Punctuality Records: Our tool allows users to compare historical on-time performances of different airlines, making it easier to choose the most reliable one.
+- Efficient Route Planning: The dashboard provides information on flight durations and distances, helping travelers select the most direct and time-efficient routes.
+- Airport Performance Statistics: By presenting data on airport punctuality, travelers can choose to fly from airports with the best track records for on-time departures and arrivals.
 
 ### Section 2: Description of the data
 We will use the Flight Delay and Cancellation Dataset

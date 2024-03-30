@@ -1,0 +1,11 @@
+name: 'flight_finder'
+channels:
+    - conda-forge
+    - defaults
+dependencies:
+    - dash
+    - dash-bootstrap-components
+    - plotly
+    - pip
+pip:
+    - dash-vega-components
