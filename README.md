@@ -1,1 +1,3 @@
-# DSCI-532_2024_22_flightfinder
+# Flight Finder - A Dashboard
+
+This is a dashboard for flights within the US filtered with information including origin (city), destination (city), and years. It aims to provide users with a big picture of delay times for flights operated by different airlines and on different days of the week. Except for the statistical summaries, the metadata of each flight is also presented in a way that the users can sort any one of the columns ascendingly or descendingly, to help them find the exact flight they would like to take.
