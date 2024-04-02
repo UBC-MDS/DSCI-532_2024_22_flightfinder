@@ -1,10 +1,10 @@
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, Input, Output, callback
 import dash_bootstrap_components as dbc
 
 
 # Initiatlize the app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
+server = app.server
 
 # Layout
 app.layout = dbc.Container([
@@ -47,4 +47,4 @@ app.layout = dbc.Container([
 
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
