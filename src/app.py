@@ -3,6 +3,7 @@ from dash import Dash, html, dcc, Input, Output, callback
 import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
 import pandas as pd
+from typing import Tuple
 import altair as alt
 
 
@@ -16,7 +17,9 @@ df = pd.read_csv('data/raw/flights_sample_3m.csv',
                           'ARR_DELAY',
                           'FL_DATE',
                           'AIR_TIME',
+                          'AIRLINE',
                           'AIRLINE_CODE'])
+
 all_origin = df['ORIGIN_CITY'].unique()
 all_dest = df['DEST_CITY'].unique()
 
@@ -156,7 +159,7 @@ app.layout = dbc.Container([
 
 # Server side callbacks/reactivity
 # ...
-def __pct_on_time_calc(delay_times: np.ndarray) -> float:
+def __pct_on_time_calc(delay_times: np.ndarray) -> Tuple[int, float]:
 
     # consider delay less than this number to be on time
     tol = 5
@@ -165,12 +168,66 @@ def __pct_on_time_calc(delay_times: np.ndarray) -> float:
     return 0.0
 
 
-def __avg_flight_time(flight_times: np.ndarray) -> float:
+def __avg_flight_time(flight_times: np.ndarray) -> Tuple[int, int]:
     if flight_times.size > 0:
-        m = flight_times.mean()
+        m = np.nanmean(flight_times)
         if isinstance(m, float):
-            return m
-    return 0.0
+            hrs = int(m // 60)
+            mins = int(m % 60)
+            return hrs, mins
+    return 0, 0
+
+
+def __avg_delay(delay_times: np.ndarray) -> float:
+    if delay_times.size > 0:
+        m = np.nanmean(delay_times)
+        return m
+    return 0
+
+def plot_stacked(df):
+    _filtered_df = df.copy()
+    _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name()
+    plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE_CODE'])
+                               .size()
+                               .reset_index(name='FLIGHT_COUNT'))
+    chart = alt.Chart(plot_data).mark_bar().encode(
+        x='DAY_OF_WEEK:O',  # Ordinal data
+        y='FLIGHT_COUNT:Q',  # Quantitative data
+        color='AIRLINE_CODE:N',  # Nominal data
+        tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
+    ).properties(
+        width=350,
+        height=350,
+        title='Count of Unique Flights by Day of the Week'
+    ).configure_axis(
+        labelAngle=0  # Adjust label angle if necessary
+    ).to_dict()
+    return chart
+    
+
+def _plot_bar_plot(df):
+    average_delay = df[['AIRLINE_CODE', 'ARR_DELAY']].groupby('AIRLINE_CODE', as_index=False).mean(numeric_only=True)
+    chart = alt.Chart(average_delay).mark_bar().encode(
+        y='AIRLINE_CODE',
+        x='ARR_DELAY',
+        color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
+        tooltip=['AIRLINE_CODE', 'ARR_DELAY']
+        ).properties(
+            width=400,
+            height=200,
+            title='Average Delay Time by Carrier'
+        ).to_dict()
+    return chart
+
+
+def _plot_hist_plot(df):
+    chart = alt.Chart(df).mark_bar().encode(
+    x=alt.X('ARR_DELAY', bin=alt.Bin(maxbins=100), title='Delay (minutes)'),
+    y=alt.Y('count()', title='Frequency')
+    ).properties(
+        title='Histogram of Delay Minutes'
+    ).to_dict()
+    return chart
 
 def plot_stacked(df):
     _filtered_df = df.copy()
@@ -243,16 +300,28 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     hist_plot = _plot_hist_plot(_df)
 
 
-    # # avg flight time
-    # _avg_flight_time = _df[:, 'AIR_TIME'].mean() # numerical value in minutes
-    # # card to return
-    # avg_flight_time = [dbc.CardHeader('Flights on Time'),
-    #                    dbc.CardBody(f'{_avg_flight_time}')] # card to return
+    # flights on time
+    pct_flights_on_time = __pct_on_time_calc(_df.loc[:, 'ARR_DELAY'].to_numpy())
+    pct_flights_on_time = [dbc.CardHeader('Flights on Time'),
+                           dbc.CardBody(f'{pct_flights_on_time:.2f}%')]
+
+    # avg flight time
+    f_hrs, f_mins = __avg_flight_time(_df.loc[:, 'AIR_TIME'].to_numpy()) # numerical value in minutes
+    # card to return
+    avg_flight_time = [dbc.CardHeader('Average Flight Time'),
+                       dbc.CardBody(f'{f_hrs}h {f_mins}min')] # card to return
+
+    # average delay
+    _avg_delay = __avg_delay(_df.loc[:, 'ARR_DELAY'].to_numpy())
+    avg_delay = [dbc.CardHeader('Average Delay'),
+                 dbc.CardBody(f'{int(_avg_delay)}')] # card to return
+
+    bar_plot = _plot_bar_plot(_df)
+    hist_plot = _plot_hist_plot(_df)
     stacked_bar_plot = plot_stacked(_df)
 
-    return None, None, None, bar_plot, stacked_bar_plot, hist_plot
+    return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot
 
 # Run the app/dashboard
 if __name__ == '__main__':
-    # app.run()
     app.run_server(debug = True, host = '127.0.0.1')
