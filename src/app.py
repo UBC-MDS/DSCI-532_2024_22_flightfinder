@@ -172,8 +172,7 @@ def plot_stacked(df):
         tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
     ).properties(
         width='container', 
-        height='container',
-        title='Count of Unique Flights by Day of the Week'
+        height='container'
     ).configure_axis(
         labelAngle=0  # Adjust label angle if necessary
     ).to_dict(format = "vega")
