@@ -194,6 +194,7 @@ def _plot_bar_plot(df):
             width=500,
             height=400,
         ).to_dict(format = "vega")
+    return chart
 
 
 def _plot_map(origin, destination, cities_lag_long):
@@ -222,8 +223,8 @@ def _plot_map(origin, destination, cities_lag_long):
         fill='lightgray',
         stroke='white'
     ).properties(
-        width=300,
-        height=200
+        width=350,
+        height=300
     ).project('albersUsa')
 
     # Plot points
@@ -249,7 +250,7 @@ def _plot_map(origin, destination, cities_lag_long):
 
 
 def _plot_hist_plot(df):
-    return alt.Chart(df).transform_joinaggregate(
+    chart = alt.Chart(df).transform_joinaggregate(
         total='count(*)'
     ).transform_calculate(
         pct='1 / datum.total'
@@ -260,6 +261,7 @@ def _plot_hist_plot(df):
             width=500,
             height=400,
     ).to_dict(format = "vega")
+    return chart
 
 
 @callback(
@@ -267,10 +269,8 @@ def _plot_hist_plot(df):
     Output('avg_flight_time', 'children'),
     Output('avg_delay', 'children'),
     Output('bar', 'spec'),
-    Output('stacked_plot', 'spec'),
     Output('hist', 'spec'),
-    Output('map_plot', 'spec'), 
-    Output('stacked_plot', 'spec'), 
+    Output('stacked_plot', 'spec'),
     Output('map_plot', 'spec'), 
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
@@ -287,9 +287,6 @@ def cb(origin_dropdown, dest_dropdown, year_range):
            & (pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year <= year_range[1]))
 
     _df = df.loc[msk, :]
-    bar_plot = _plot_bar_plot(_df)
-    hist_plot = _plot_hist_plot(_df)
-
 
     # flights on time
     pct_flights_on_time = __pct_on_time_calc(_df.loc[:, 'ARR_DELAY'].to_numpy())
@@ -312,7 +309,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     stacked_bar_plot = plot_stacked(_df)
     map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lag_long)
 
-    return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot, map_plot
+    return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, hist_plot, stacked_bar_plot, map_plot
 
   
 # Run the app/dashboard
