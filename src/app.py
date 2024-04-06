@@ -214,6 +214,10 @@ def _plot_map(origin, destination, cities_lag_long):
 
     # Define origin and destination coordinates
     origin_city = origin.split(",")[0]
+
+    if '/' in origin_city:
+        origin_city = origin_city.split("/")[0]
+
     dest_city = destination.split(",")[0]
     origin_lat, origin_long = cities_lag_long[origin_city]
     dest_lat, dest_long = cities_lag_long[dest_city]
