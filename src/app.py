@@ -18,7 +18,8 @@ df = pd.read_csv('data/processed/data.gzip', compression='gzip',
                           'FL_DATE',
                           'AIR_TIME',
                           'AIRLINE',
-                          'AIRLINE_CODE'])
+                          'AIRLINE_CODE',
+                          'AIRLINE'])
 
 all_origin = df['ORIGIN_CITY'].unique()
 all_dest = df['DEST_CITY'].unique()
@@ -47,18 +48,18 @@ global_widgets = [
     dcc.Dropdown(
         id='origin_dropdown',
         options=all_origin,
-        value='Seattle, WA',
+        value='Atlanta, GA',
         multi=False,
-        placeholder='Select a city...'
+        # placeholder='Select a city...'
     ),
     html.Br(),
     html.Label('Destination'),
     dcc.Dropdown(
         id='dest_dropdown',
         options=all_dest,
-        value='San Francisco, CA',
+        value='Denver, CO',
         multi=False,
-        placeholder='Select a city...'
+        # placeholder='Select a city...'
     )
 ]
 
@@ -174,16 +175,15 @@ def plot_stacked(df):
     
 
 def _plot_bar_plot(df):
-    average_delay = df[['AIRLINE_CODE', 'ARR_DELAY']].groupby('AIRLINE_CODE', as_index=False).mean(numeric_only=True)
+    average_delay = df[['AIRLINE', 'ARR_DELAY']].groupby('AIRLINE', as_index=False).mean(numeric_only=True)
     chart = alt.Chart(average_delay).mark_bar().encode(
-        y='AIRLINE_CODE',
-        x='ARR_DELAY',
-        color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
-        tooltip=['AIRLINE_CODE', 'ARR_DELAY']
+        y=alt.Y('AIRLINE', sort=alt.EncodingSortField(field='ARR_DELAY', order='descending')),
+        x=alt.X('ARR_DELAY', title='Average Delay (minutes)'),
+        color=alt.Color('AIRLINE', legend=None),  # Optional color encoding by airline_name
+        tooltip=['AIRLINE', 'ARR_DELAY']
         ).properties(
-            width=400,
-            height=200,
-            title='Average Delay Time by Carrier'
+            width=500,
+            height=400,
         ).to_dict()
     return chart
 
