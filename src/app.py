@@ -1,10 +1,13 @@
 import numpy as np
 from dash import Dash, html, dcc, Input, Output, callback
+
+from vega_datasets import data
 import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
 import pandas as pd
 from typing import Tuple
 import altair as alt
+alt.data_transformers.enable('vegafusion')
 
 
 # Initiatlize the app
@@ -24,6 +27,8 @@ df = pd.read_csv('data/processed/data.gzip', compression='gzip',
 all_origin = df['ORIGIN_CITY'].unique()
 all_dest = df['DEST_CITY'].unique()
 
+cities = pd.read_csv('data/raw/usa-airports.csv')
+cities_lag_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
 # Layout
 
 
@@ -69,10 +74,13 @@ card_flights_on_time = dbc.Card(id='flights_on_time')
 card_average_flight_time = dbc.Card(id='avg_flight_time')
 card_average_delay = dbc.Card(id='avg_delay')
 
+# card_longitude = dbc.Card(id='latitude') # test, to remove
+
 cards = dbc.Row([
     dbc.Col(card_flights_on_time, md=4),
     dbc.Col(card_average_flight_time, md=4),
-    dbc.Col(card_average_delay, md=4)
+    dbc.Col(card_average_delay, md=4),
+    # dbc.Col(card_longitude, md=4) # test, to remove
 ])
 
 mock_data = {
@@ -94,7 +102,8 @@ graph_number_unique_flights = html.Div([
 # graph_number_unique_flights = dvc.Vega(id='stacked_plot', spec={})
 
 graph_map = html.Div([
-    html.P('Map')
+    html.P('Map'),
+    dvc.Vega(id='map_plot', spec={})
 ])
 
 # graph_count_by_delay = html.Div([
@@ -170,7 +179,7 @@ def plot_stacked(df):
         title='Count of Unique Flights by Day of the Week'
     ).configure_axis(
         labelAngle=0  # Adjust label angle if necessary
-    ).to_dict()
+    ).to_dict(format = "vega")
     return chart
     
 
@@ -184,7 +193,57 @@ def _plot_bar_plot(df):
         ).properties(
             width=500,
             height=400,
-        ).to_dict()
+        ).to_dict(format = "vega")
+
+
+def _plot_map(origin, destination, cities_lag_long):
+    
+    us_states = alt.topo_feature(data.us_10m.url, 'states')
+
+    # Define origin and destination coordinates
+    origin_city = origin.split(",")[0]
+    dest_city = destination.split(",")[0]
+    origin_lat, origin_long = cities_lag_long[origin_city]
+    dest_lat, dest_long = cities_lag_long[dest_city]
+    origin = {'city': origin_city, 'latitude': origin_lat, 'longitude': origin_long}
+    destination = {'city': dest_city, 'latitude': dest_lat, 'longitude': dest_long}
+
+    # Create DataFrame for points
+    points_df = pd.DataFrame([origin, destination])
+
+    # Create DataFrame for the line
+    line_df = pd.DataFrame({
+        'latitude': [origin['latitude'], destination['latitude']],
+        'longitude': [origin['longitude'], destination['longitude']]
+    })
+
+    # Create a map of the US
+    us_map = alt.Chart(us_states).mark_geoshape(
+        fill='lightgray',
+        stroke='white'
+    ).properties(
+        width=300,
+        height=200
+    ).project('albersUsa')
+
+    # Plot points
+    points = alt.Chart(points_df).mark_point(
+        filled=True,
+        color='red'
+    ).encode(
+        longitude='longitude:Q',
+        latitude='latitude:Q',
+        tooltip=['city:N']
+    )
+
+    # Plot lines
+    lines = alt.Chart(line_df).mark_line(
+        color='blue'
+    ).encode(
+        longitude='longitude:Q',
+        latitude='latitude:Q'
+    )
+    chart = (us_map + points + lines).to_dict(format = "vega")
     return chart
 
 
@@ -194,7 +253,7 @@ def _plot_hist_plot(df):
     y=alt.Y('count()', title='Frequency')
     ).properties(
         title='Histogram of Delay Minutes'
-    ).to_dict()
+    ).to_dict(format = "vega")
     return chart
 
 
@@ -205,6 +264,9 @@ def _plot_hist_plot(df):
     Output('bar', 'spec'),
     Output('stacked_plot', 'spec'),
     Output('hist', 'spec'),
+    Output('map_plot', 'spec'), 
+    Output('stacked_plot', 'spec'), 
+    Output('map_plot', 'spec'), 
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
     Input('year_range', 'value')
@@ -243,8 +305,9 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     bar_plot = _plot_bar_plot(_df)
     hist_plot = _plot_hist_plot(_df)
     stacked_bar_plot = plot_stacked(_df)
+    map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lag_long)
 
-    return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot
+    return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot, map_plot
 
   
 # Run the app/dashboard
