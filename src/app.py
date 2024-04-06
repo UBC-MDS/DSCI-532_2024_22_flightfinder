@@ -97,10 +97,10 @@ graph_map = html.Div([
     html.P('Map')
 ])
 
-# graph_count_by_delay = html.Div([
-#     html.P('Count by delay')
-# ])
-graph_count_by_delay = dvc.Vega(id='hist', spec={})
+graph_count_by_delay = html.Div([
+    html.P('Probabilty of Flight Delays'),
+    dvc.Vega(id='hist', spec={})
+])
 
 
 app.layout = dbc.Container([
@@ -188,14 +188,19 @@ def _plot_bar_plot(df):
     return chart
 
 
+
 def _plot_hist_plot(df):
-    chart = alt.Chart(df).mark_bar().encode(
-    x=alt.X('ARR_DELAY', bin=alt.Bin(maxbins=100), title='Delay (minutes)'),
-    y=alt.Y('count()', title='Frequency')
+    return alt.Chart(df).transform_joinaggregate(
+        total='count(*)'
+    ).transform_calculate(
+        pct='1 / datum.total'
+    ).mark_bar().encode(
+        x=alt.X('ARR_DELAY:Q', bin=alt.Bin(step=30), title='Delay (minutes)'),
+        y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Total Flights')
     ).properties(
-        title='Histogram of Delay Minutes'
+            width=500,
+            height=400,
     ).to_dict()
-    return chart
 
 
 @callback(
