@@ -3,18 +3,20 @@ from dash import Dash, html, dcc, Input, Output, callback
 import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
 import pandas as pd
+import altair as alt
 
 
 # Initiatlize the app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-df = pd.read_csv('../data/raw/flights_sample_3m.csv',
+df = pd.read_csv('data/raw/flights_sample_3m.csv',
                  usecols=['ORIGIN_CITY',
                           'DEST_CITY',
                           'ARR_DELAY',
                           'FL_DATE',
-                          'AIR_TIME'])
+                          'AIR_TIME',
+                          'AIRLINE_CODE'])
 all_origin = df['ORIGIN_CITY'].unique()
 all_dest = df['DEST_CITY'].unique()
 
@@ -32,7 +34,7 @@ global_widgets = [
         id='year_range',
         min=2019,
         max=2023,
-        value=[1, 12],  # A list since it's a range slideer
+        value=[2019, 2023],  # A list since it's a range slideer
         step=1,  # The step between values
         marks={i: str(i) for i in range(2019, 2024)},  # The marks on the slider
         tooltip={'always_visible': True, 'placement': 'bottom'}  # Show the current values
@@ -167,16 +169,16 @@ def __avg_flight_time(flight_times: np.ndarray) -> float:
     return 0.0
 
 
-def plot_bar_plot(df):
-    average_delay = df.groupby('ARR_DELAY', as_index=False).mean()
+def _plot_bar_plot(df):
+    average_delay = df[['AIRLINE_CODE', 'ARR_DELAY']].groupby('AIRLINE_CODE', as_index=False).mean(numeric_only=True)
     chart = alt.Chart(average_delay).mark_bar().encode(
-        y='airline_name',
-        x='DELAY_time',
-        color=alt.Color('airline_name', legend=None),  # Optional color encoding by airline_name
-        tooltip=['airline_name', 'DELAY_time']
-    ).properties(
-        title='Average Delay Time by Carrier'
-    ).to_dict()
+        y='AIRLINE_CODE',
+        x='ARR_DELAY',
+        color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
+        tooltip=['AIRLINE_CODE', 'ARR_DELAY']
+        ).properties(
+            title='Average Delay Time by Carrier'
+        ).to_dict()
     return chart
 
 
@@ -184,7 +186,7 @@ def plot_bar_plot(df):
     Output('flights_on_time', 'children'),
     Output('avg_flight_time', 'children'),
     Output('avg_delay', 'children'),
-    Output('bar', 'children'),
+    Output('bar', 'spec'),
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
     Input('year_range', 'value')
@@ -204,7 +206,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     print(msk.sum())
 
     _df = df.loc[msk, :]
-    bar_plot = plot_bar_plot(_df)
+    bar_plot = _plot_bar_plot(_df)
 
 
 
