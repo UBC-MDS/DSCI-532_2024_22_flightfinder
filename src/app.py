@@ -210,9 +210,20 @@ def _plot_hist_plot(df):
     ).to_dict()
 
 def _plot_map(origin, destination, cities_lat_long):
-    
+
     us_states = alt.topo_feature(data.us_10m.url, 'states')
 
+    if not origin or not destination:
+        us_map = alt.Chart(us_states).mark_geoshape(
+            fill='lightgray',
+            stroke='white'
+        ).properties(
+            width='container',
+            height='container'
+        ).project('albersUsa')
+
+        return us_map.to_dict()
+    
     # Define origin and destination coordinates
     origin_city = origin.split(",")[0]
     if '/' in origin_city:
@@ -273,20 +284,28 @@ def _plot_map(origin, destination, cities_lat_long):
     Input('origin_dropdown', 'value')
 )
 def update_destination_options(selected_origin):
-    filtered_df = df[df['ORIGIN_CITY'] == selected_origin]
-    destinations = filtered_df['DEST_CITY'].unique()
-    dest_options = [{'label': dest, 'value': dest} for dest in destinations]
-    return dest_options
+    if not selected_origin:  # This checks if selected_origin is None or an empty string
+        # Reset to show all destinations
+        all_destinations = df['DEST_CITY'].unique()
+        return [{'label': dest, 'value': dest} for dest in all_destinations]
+    else:
+        filtered_df = df[df['ORIGIN_CITY'] == selected_origin]
+        destinations = filtered_df['DEST_CITY'].unique()
+        return [{'label': dest, 'value': dest} for dest in destinations]
 
 @app.callback(
     Output('origin_dropdown', 'options'),
     Input('dest_dropdown', 'value')
 )
 def update_origin_options(selected_destination):
-    filtered_df = df[df['DEST_CITY'] == selected_destination]
-    origins = filtered_df['ORIGIN_CITY'].unique()
-    origin_options = [{'label': origin, 'value': origin} for origin in origins]
-    return origin_options
+    if not selected_destination:  # This checks if selected_destination is None or an empty string
+        # Reset to show all origins
+        all_origins = df['ORIGIN_CITY'].unique()
+        return [{'label': origin, 'value': origin} for origin in all_origins]
+    else:
+        filtered_df = df[df['DEST_CITY'] == selected_destination]
+        origins = filtered_df['ORIGIN_CITY'].unique()
+        return [{'label': origin, 'value': origin} for origin in origins]
 
 
 @callback(
