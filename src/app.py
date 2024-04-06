@@ -10,7 +10,7 @@ import altair as alt
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-df = pd.read_csv('data/flights_sample_3m.csv',
+df = pd.read_csv('data/raw/flights_sample_3m.csv',
                  usecols=['ORIGIN_CITY',
                           'DEST_CITY',
                           'ARR_DELAY',
@@ -110,16 +110,17 @@ mock_data = {
 }
 
 
-# graph_avg_delay_by_carrier = html.Div([
-#     html.P('Average delay by carrier'),
-# ])
-graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
+graph_avg_delay_by_carrier = html.Div([
+    html.P('Average delay by carrier'),
+    dvc.Vega(id='bar', spec={})
+])
+# graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
 
-# graph_number_unique_flights = html.Div([
-#     html.P('Number of unique flights'), 
-#     dvc.Vega(id='stacked_plot', spec={})
-# ])
-graph_number_unique_flights = dvc.Vega(id='stacked_plot', spec={})
+graph_number_unique_flights = html.Div([
+    html.P('Number of unique flights'), 
+    dvc.Vega(id='stacked_plot', spec={})
+])
+# graph_number_unique_flights = dvc.Vega(id='stacked_plot', spec={})
 
 graph_map = html.Div([
     html.P('Map')
@@ -182,13 +183,13 @@ def plot_stacked(df):
         color='AIRLINE_CODE:N',  # Nominal data
         tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
     ).properties(
-        width=600,
-        height=400,
+        width=350,
+        height=350,
         title='Count of Unique Flights by Day of the Week'
     ).configure_axis(
         labelAngle=0  # Adjust label angle if necessary
-    )
-    return chart.to_dict()
+    ).to_dict()
+    return chart
     
 
 def _plot_bar_plot(df):
@@ -199,6 +200,8 @@ def _plot_bar_plot(df):
         color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
         tooltip=['AIRLINE_CODE', 'ARR_DELAY']
         ).properties(
+            width=400,
+            height=200,
             title='Average Delay Time by Carrier'
         ).to_dict()
     return chart
@@ -235,11 +238,11 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     bar_plot = _plot_bar_plot(_df)
 
 
-    # avg flight time
-    _avg_flight_time = _df[:, 'AIR_TIME'].mean() # numerical value in minutes
-    # card to return
-    avg_flight_time = [dbc.CardHeader('Flights on Time'),
-                       dbc.CardBody(f'{_avg_flight_time}')] # card to return
+    # # avg flight time
+    # _avg_flight_time = _df[:, 'AIR_TIME'].mean() # numerical value in minutes
+    # # card to return
+    # avg_flight_time = [dbc.CardHeader('Flights on Time'),
+    #                    dbc.CardBody(f'{_avg_flight_time}')] # card to return
     stacked_bar_plot = plot_stacked(_df)
 
     # return pct_flights_on_time, avg_flight_time
@@ -247,4 +250,4 @@ def cb(origin_dropdown, dest_dropdown, year_range):
 # Run the app/dashboard
 if __name__ == '__main__':
     # app.run()
-    app.run_server(host = '127.0.0.1')
+    app.run_server(debug = True, host = '127.0.0.1')
