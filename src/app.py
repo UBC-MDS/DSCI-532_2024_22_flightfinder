@@ -268,6 +268,26 @@ def _plot_map(origin, destination, cities_lat_long):
     chart = (us_map + points + lines).to_dict(format = "vega")
     return chart
 
+@app.callback(
+    Output('dest_dropdown', 'options'),
+    Input('origin_dropdown', 'value')
+)
+def update_destination_options(selected_origin):
+    filtered_df = df[df['ORIGIN_CITY'] == selected_origin]
+    destinations = filtered_df['DEST_CITY'].unique()
+    dest_options = [{'label': dest, 'value': dest} for dest in destinations]
+    return dest_options
+
+@app.callback(
+    Output('origin_dropdown', 'options'),
+    Input('dest_dropdown', 'value')
+)
+def update_origin_options(selected_destination):
+    filtered_df = df[df['DEST_CITY'] == selected_destination]
+    origins = filtered_df['ORIGIN_CITY'].unique()
+    origin_options = [{'label': origin, 'value': origin} for origin in origins]
+    return origin_options
+
 
 @callback(
     Output('flights_on_time', 'children'),
