@@ -151,6 +151,7 @@ def __avg_delay(delay_times: np.ndarray) -> float:
         return m
     return 0
 
+  
 def plot_stacked(df):
     _filtered_df = df.copy()
     _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name()
@@ -245,7 +246,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
 
     return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot
 
-
+  
 # Run the app/dashboard
 if __name__ == '__main__':
     app.run_server(debug = True, host = '127.0.0.1')
