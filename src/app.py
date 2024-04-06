@@ -6,6 +6,10 @@ import pandas as pd
 from typing import Tuple
 import altair as alt
 
+from vega_datasets import data
+alt.data_transformers.enable('vegafusion')
+cities = pd.read_csv('data/raw/usa-airports.csv')
+cities_lag_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
 
 # Initiatlize the app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -94,11 +98,12 @@ graph_number_unique_flights = html.Div([
 # graph_number_unique_flights = dvc.Vega(id='stacked_plot', spec={})
 
 graph_map = html.Div([
-    html.P('Map')
+    html.P('Map'),
+    dvc.Vega(id='map_plot', spec={})
 ])
 
 graph_count_by_delay = html.Div([
-    html.P('Probabilty of Flight Delays'),
+    html.P('Probability of Flight Delays'),
     dvc.Vega(id='hist', spec={})
 ])
 
@@ -170,7 +175,7 @@ def plot_stacked(df):
         title='Count of Unique Flights by Day of the Week'
     ).configure_axis(
         labelAngle=0  # Adjust label angle if necessary
-    ).to_dict()
+    ).to_dict(format = "vega")
     return chart
     
 
@@ -184,12 +189,13 @@ def _plot_bar_plot(df):
         ).properties(
             width=500,
             height=400,
-        ).to_dict()
+        ).to_dict(format = "vega")
     return chart
 
 
 
 def _plot_hist_plot(df):
+    alt.data_transformers.enable('default')
     return alt.Chart(df).transform_joinaggregate(
         total='count(*)'
     ).transform_calculate(
@@ -198,9 +204,59 @@ def _plot_hist_plot(df):
         x=alt.X('ARR_DELAY:Q', bin=alt.Bin(step=30), title='Delay (minutes)'),
         y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Total Flights')
     ).properties(
-            width=500,
+            width=400,
             height=400,
     ).to_dict()
+
+def _plot_map(origin, destination, cities_lag_long):
+    
+    us_states = alt.topo_feature(data.us_10m.url, 'states')
+
+    # Define origin and destination coordinates
+    origin_city = origin.split(",")[0]
+    dest_city = destination.split(",")[0]
+    origin_lat, origin_long = cities_lag_long[origin_city]
+    dest_lat, dest_long = cities_lag_long[dest_city]
+    origin = {'city': origin_city, 'latitude': origin_lat, 'longitude': origin_long}
+    destination = {'city': dest_city, 'latitude': dest_lat, 'longitude': dest_long}
+
+    # Create DataFrame for points
+    points_df = pd.DataFrame([origin, destination])
+
+    # Create DataFrame for the line
+    line_df = pd.DataFrame({
+        'latitude': [origin['latitude'], destination['latitude']],
+        'longitude': [origin['longitude'], destination['longitude']]
+    })
+
+    # Create a map of the US
+    us_map = alt.Chart(us_states).mark_geoshape(
+        fill='lightgray',
+        stroke='white'
+    ).properties(
+        width=400,
+        height=300
+    ).project('albersUsa')
+
+    # Plot points
+    points = alt.Chart(points_df).mark_point(
+        filled=True,
+        color='red'
+    ).encode(
+        longitude='longitude:Q',
+        latitude='latitude:Q',
+        tooltip=['city:N']
+    )
+
+    # Plot lines
+    lines = alt.Chart(line_df).mark_line(
+        color='blue'
+    ).encode(
+        longitude='longitude:Q',
+        latitude='latitude:Q'
+    )
+    chart = (us_map + points + lines).to_dict(format = "vega")
+    return chart
 
 
 @callback(
@@ -210,6 +266,7 @@ def _plot_hist_plot(df):
     Output('bar', 'spec'),
     Output('stacked_plot', 'spec'),
     Output('hist', 'spec'),
+    Output('map_plot', 'spec'),
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
     Input('year_range', 'value')
@@ -248,8 +305,9 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     bar_plot = _plot_bar_plot(_df)
     hist_plot = _plot_hist_plot(_df)
     stacked_bar_plot = plot_stacked(_df)
+    map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lag_long)
 
-    return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot
+    return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot, map_plot
 
   
 # Run the app/dashboard
