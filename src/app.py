@@ -11,7 +11,7 @@ import altair as alt
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-df = pd.read_csv('data/raw/flights_sample_3m.csv',
+df = pd.read_csv('data/processed/data.gzip', compression='gzip',
                  usecols=['ORIGIN_CITY',
                           'DEST_CITY',
                           'ARR_DELAY',
@@ -65,41 +65,8 @@ global_widgets = [
 
 # Cards
 
-# card_flights_on_time = dbc.Card(
-#     [
-#         dbc.CardBody(
-#             [
-#                 html.H4('Flights on Time'),
-#                 html.H2('99.9%'),
-#             ]
-#         )
-#     ]
-# )
-
 card_flights_on_time = dbc.Card(id='flights_on_time')
-
-# card_average_flight_time = dbc.Card(
-#     [
-#         dbc.CardBody(
-#             [
-#                 html.H4('Average Flight Time'),
-#                 html.H2('3h 45m'),
-#             ]
-#         )
-#     ]
-# )
 card_average_flight_time = dbc.Card(id='avg_flight_time')
-
-# card_average_delay = dbc.Card(
-#     [
-#         dbc.CardBody(
-#             [
-#                 html.H4('Average Delay'),
-#                 html.H2('15m'),
-#             ]
-#         )
-#     ]
-# )
 card_average_delay = dbc.Card(id='avg_delay')
 
 cards = dbc.Row([
@@ -185,6 +152,7 @@ def __avg_delay(delay_times: np.ndarray) -> float:
         return m
     return 0
 
+  
 def plot_stacked(df):
     _filtered_df = df.copy()
     _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name()
@@ -278,6 +246,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
 
     return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot
 
+  
 # Run the app/dashboard
 if __name__ == '__main__':
     app.run_server(debug = True, host = '127.0.0.1')
