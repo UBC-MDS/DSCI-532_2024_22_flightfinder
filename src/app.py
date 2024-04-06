@@ -8,8 +8,9 @@ import altair as alt
 
 from vega_datasets import data
 alt.data_transformers.enable('vegafusion')
-cities = pd.read_csv('data/raw/usa-airports.csv')
-cities_lag_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
+cities = pd.read_csv('data/raw/updated_usa_airports.csv')
+cities_lat_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
+
 
 # Initiatlize the app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -208,19 +209,24 @@ def _plot_hist_plot(df):
             height=400,
     ).to_dict()
 
-def _plot_map(origin, destination, cities_lag_long):
+def _plot_map(origin, destination, cities_lat_long):
     
     us_states = alt.topo_feature(data.us_10m.url, 'states')
 
     # Define origin and destination coordinates
     origin_city = origin.split(",")[0]
-
     if '/' in origin_city:
         origin_city = origin_city.split("/")[0]
 
     dest_city = destination.split(",")[0]
-    origin_lat, origin_long = cities_lag_long[origin_city]
-    dest_lat, dest_long = cities_lag_long[dest_city]
+    if '/' in dest_city:
+        dest_city = dest_city.split("/")[0]
+
+    origin_lat, origin_long = cities_lat_long[origin_city]
+    dest_lat, dest_long = cities_lat_long[dest_city]
+
+
+
     origin = {'city': origin_city, 'latitude': origin_lat, 'longitude': origin_long}
     destination = {'city': dest_city, 'latitude': dest_lat, 'longitude': dest_long}
 
@@ -309,7 +315,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     bar_plot = _plot_bar_plot(_df)
     hist_plot = _plot_hist_plot(_df)
     stacked_bar_plot = plot_stacked(_df)
-    map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lag_long)
+    map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lat_long)
 
     return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot, map_plot
 
