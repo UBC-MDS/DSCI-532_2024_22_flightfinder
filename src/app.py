@@ -123,9 +123,10 @@ graph_map = html.Div([
     html.P('Map')
 ])
 
-graph_count_by_delay = html.Div([
-    html.P('Count by delay')
-])
+# graph_count_by_delay = html.Div([
+#     html.P('Count by delay')
+# ])
+graph_count_by_delay = dvc.Vega(id='hist', spec={})
 
 
 app.layout = dbc.Container([
@@ -182,11 +183,24 @@ def _plot_bar_plot(df):
     return chart
 
 
+def _plot_hist_plot(df):
+    average_delay = df[['AIRLINE_CODE', 'ARR_DELAY']].groupby('AIRLINE_CODE', as_index=False).mean(numeric_only=True)
+    chart = alt.Chart(average_delay).mark_bar().encode(
+        y='AIRLINE_CODE',
+        x='ARR_DELAY',
+        color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
+        tooltip=['AIRLINE_CODE', 'ARR_DELAY']
+        ).properties(
+            title='Average Delay Time by Carrier'
+        ).to_dict()
+    return chart
+
 @callback(
     Output('flights_on_time', 'children'),
     Output('avg_flight_time', 'children'),
     Output('avg_delay', 'children'),
     Output('bar', 'spec'),
+    Output('hist', 'spec'),
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
     Input('year_range', 'value')
@@ -196,21 +210,20 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     # temporarily disable multi dest
     if isinstance(dest_dropdown, list):
         dest_dropdown = dest_dropdown[0]
-    print(dest_dropdown)
     msk = ((df['ORIGIN_CITY'] == origin_dropdown)
            & (df['DEST_CITY'] == dest_dropdown)
            & (pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year >= year_range[0])
            & (pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year <= year_range[1]))
-    print(origin_dropdown)
-    print(dest_dropdown)
-    print(msk.sum())
 
     _df = df.loc[msk, :]
+    print("--------------------")
+    print(_df['FL_DATE'])
     bar_plot = _plot_bar_plot(_df)
+    hist_plot = _plot_hist_plot(_df)
 
 
 
-    return None, None, None, bar_plot
+    return None, None, None, bar_plot, hist_plot
 
 
 # Run the app/dashboard
