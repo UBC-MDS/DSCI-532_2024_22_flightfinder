@@ -110,14 +110,17 @@ mock_data = {
 }
 
 
-# graph_avg_delay_by_carrier = html.Div([
-#     html.P('Average delay by carrier'),
-# ])
-graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
+graph_avg_delay_by_carrier = html.Div([
+    html.P('Average delay by carrier'),
+    dvc.Vega(id='bar', spec={})
+])
+# graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
 
 graph_number_unique_flights = html.Div([
-    html.P('Number of unique flights')
+    html.P('Number of unique flights'), 
+    dvc.Vega(id='stacked_plot', spec={})
 ])
+# graph_number_unique_flights = dvc.Vega(id='stacked_plot', spec={})
 
 graph_map = html.Div([
     html.P('Map')
@@ -169,6 +172,26 @@ def __avg_flight_time(flight_times: np.ndarray) -> float:
             return m
     return 0.0
 
+def plot_stacked(df):
+    _filtered_df = df.copy()
+    _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name()
+    plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE_CODE'])
+                               .size()
+                               .reset_index(name='FLIGHT_COUNT'))
+    chart = alt.Chart(plot_data).mark_bar().encode(
+        x='DAY_OF_WEEK:O',  # Ordinal data
+        y='FLIGHT_COUNT:Q',  # Quantitative data
+        color='AIRLINE_CODE:N',  # Nominal data
+        tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
+    ).properties(
+        width=350,
+        height=350,
+        title='Count of Unique Flights by Day of the Week'
+    ).configure_axis(
+        labelAngle=0  # Adjust label angle if necessary
+    ).to_dict()
+    return chart
+    
 
 def _plot_bar_plot(df):
     average_delay = df[['AIRLINE_CODE', 'ARR_DELAY']].groupby('AIRLINE_CODE', as_index=False).mean(numeric_only=True)
@@ -178,6 +201,8 @@ def _plot_bar_plot(df):
         color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
         tooltip=['AIRLINE_CODE', 'ARR_DELAY']
         ).properties(
+            width=400,
+            height=200,
             title='Average Delay Time by Carrier'
         ).to_dict()
     return chart
@@ -197,6 +222,7 @@ def _plot_hist_plot(df):
     Output('avg_flight_time', 'children'),
     Output('avg_delay', 'children'),
     Output('bar', 'spec'),
+    Output('stacked_plot', 'spec'),
     Output('hist', 'spec'),
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
@@ -217,12 +243,16 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     hist_plot = _plot_hist_plot(_df)
 
 
+    # # avg flight time
+    # _avg_flight_time = _df[:, 'AIR_TIME'].mean() # numerical value in minutes
+    # # card to return
+    # avg_flight_time = [dbc.CardHeader('Flights on Time'),
+    #                    dbc.CardBody(f'{_avg_flight_time}')] # card to return
+    stacked_bar_plot = plot_stacked(_df)
 
-    return None, None, None, bar_plot, hist_plot
-
+    return None, None, None, bar_plot, stacked_bar_plot, hist_plot
 
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run(debug=True)
-
-#%%
+    # app.run()
+    app.run_server(debug = True, host = '127.0.0.1')
