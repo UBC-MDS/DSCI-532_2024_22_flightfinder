@@ -136,4 +136,5 @@ app.layout = dbc.Container([
 
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run()
+    # app.run()
+    app.run_server(host = '127.0.0.1')
