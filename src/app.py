@@ -3,18 +3,20 @@ from dash import Dash, html, dcc, Input, Output, callback
 import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
 import pandas as pd
+import altair as alt
 
 
 # Initiatlize the app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-df = pd.read_csv('../flights_sample_3m.csv',
+df = pd.read_csv('data/raw/flights_sample_3m.csv',
                  usecols=['ORIGIN_CITY',
                           'DEST_CITY',
                           'ARR_DELAY',
                           'FL_DATE',
-                          'AIR_TIME'])
+                          'AIR_TIME',
+                          'AIRLINE_CODE'])
 all_origin = df['ORIGIN_CITY'].unique()
 all_dest = df['DEST_CITY'].unique()
 
@@ -32,7 +34,7 @@ global_widgets = [
         id='year_range',
         min=2019,
         max=2023,
-        value=[1, 12],  # A list since it's a range slideer
+        value=[2019, 2023],  # A list since it's a range slideer
         step=1,  # The step between values
         marks={i: str(i) for i in range(2019, 2024)},  # The marks on the slider
         tooltip={'always_visible': True, 'placement': 'bottom'}  # Show the current values
@@ -108,9 +110,10 @@ mock_data = {
 }
 
 
-graph_avg_delay_by_carrier = html.Div([
-    html.P('Average delay by carrier'),
-])
+# graph_avg_delay_by_carrier = html.Div([
+#     html.P('Average delay by carrier'),
+# ])
+graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
 
 graph_number_unique_flights = html.Div([
     html.P('Number of unique flights')
@@ -166,10 +169,24 @@ def __avg_flight_time(flight_times: np.ndarray) -> float:
     return 0.0
 
 
+def _plot_bar_plot(df):
+    average_delay = df[['AIRLINE_CODE', 'ARR_DELAY']].groupby('AIRLINE_CODE', as_index=False).mean(numeric_only=True)
+    chart = alt.Chart(average_delay).mark_bar().encode(
+        y='AIRLINE_CODE',
+        x='ARR_DELAY',
+        color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
+        tooltip=['AIRLINE_CODE', 'ARR_DELAY']
+        ).properties(
+            title='Average Delay Time by Carrier'
+        ).to_dict()
+    return chart
+
+
 @callback(
     Output('flights_on_time', 'children'),
     Output('avg_flight_time', 'children'),
     Output('avg_delay', 'children'),
+    Output('bar', 'spec'),
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
     Input('year_range', 'value')
@@ -189,19 +206,11 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     print(msk.sum())
 
     _df = df.loc[msk, :]
+    bar_plot = _plot_bar_plot(_df)
 
-    # flights on time
-    pct_flights_on_time = __pct_on_time_calc(_df.loc[:, 'ARR_DELAY'].to_numpy())
-    pct_flights_on_time = [dbc.CardHeader('Flights on Time'),
-                           dbc.CardBody(f'{pct_flights_on_time}%')]
 
-    # avg flight time
-    _avg_flight_time = _df[:, 'AIR_TIME'].mean() # numerical value in minutes
-    # card to return
-    avg_flight_time = [dbc.CardHeader('Flights on Time'),
-                       dbc.CardBody(f'{_avg_flight_time}')] # card to return
 
-    return pct_flights_on_time, avg_flight_time
+    return None, None, None, bar_plot
 
 
 # Run the app/dashboard
