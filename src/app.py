@@ -184,15 +184,12 @@ def _plot_bar_plot(df):
 
 
 def _plot_hist_plot(df):
-    average_delay = df[['AIRLINE_CODE', 'ARR_DELAY']].groupby('AIRLINE_CODE', as_index=False).mean(numeric_only=True)
-    chart = alt.Chart(average_delay).mark_bar().encode(
-        y='AIRLINE_CODE',
-        x='ARR_DELAY',
-        color=alt.Color('AIRLINE_CODE', legend=None),  # Optional color encoding by airline_name
-        tooltip=['AIRLINE_CODE', 'ARR_DELAY']
-        ).properties(
-            title='Average Delay Time by Carrier'
-        ).to_dict()
+    chart = alt.Chart(df).mark_bar().encode(
+    x=alt.X('ARR_DELAY', bin=alt.Bin(maxbins=100), title='Delay (minutes)'),
+    y=alt.Y('count()', title='Frequency')
+    ).properties(
+        title='Histogram of Delay Minutes'
+    ).to_dict()
     return chart
 
 @callback(
@@ -216,8 +213,6 @@ def cb(origin_dropdown, dest_dropdown, year_range):
            & (pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year <= year_range[1]))
 
     _df = df.loc[msk, :]
-    print("--------------------")
-    print(_df['FL_DATE'])
     bar_plot = _plot_bar_plot(_df)
     hist_plot = _plot_hist_plot(_df)
 
