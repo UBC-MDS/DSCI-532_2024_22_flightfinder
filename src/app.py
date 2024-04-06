@@ -9,7 +9,7 @@ import pandas as pd
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-df = pd.read_csv('../flights_sample_3m.csv',
+df = pd.read_csv('../data/raw/flights_sample_3m.csv',
                  usecols=['ORIGIN_CITY',
                           'DEST_CITY',
                           'ARR_DELAY',
@@ -108,9 +108,10 @@ mock_data = {
 }
 
 
-graph_avg_delay_by_carrier = html.Div([
-    html.P('Average delay by carrier'),
-])
+# graph_avg_delay_by_carrier = html.Div([
+#     html.P('Average delay by carrier'),
+# ])
+graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
 
 graph_number_unique_flights = html.Div([
     html.P('Number of unique flights')
@@ -166,10 +167,24 @@ def __avg_flight_time(flight_times: np.ndarray) -> float:
     return 0.0
 
 
+def plot_bar_plot(df):
+    average_delay = df.groupby('ARR_DELAY', as_index=False).mean()
+    chart = alt.Chart(average_delay).mark_bar().encode(
+        y='airline_name',
+        x='DELAY_time',
+        color=alt.Color('airline_name', legend=None),  # Optional color encoding by airline_name
+        tooltip=['airline_name', 'DELAY_time']
+    ).properties(
+        title='Average Delay Time by Carrier'
+    ).to_dict()
+    return chart
+
+
 @callback(
     Output('flights_on_time', 'children'),
     Output('avg_flight_time', 'children'),
     Output('avg_delay', 'children'),
+    Output('bar', 'children'),
     Input('origin_dropdown', 'value'),
     Input('dest_dropdown', 'value'),
     Input('year_range', 'value')
@@ -189,19 +204,11 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     print(msk.sum())
 
     _df = df.loc[msk, :]
+    bar_plot = plot_bar_plot(_df)
 
-    # flights on time
-    pct_flights_on_time = __pct_on_time_calc(_df.loc[:, 'ARR_DELAY'].to_numpy())
-    pct_flights_on_time = [dbc.CardHeader('Flights on Time'),
-                           dbc.CardBody(f'{pct_flights_on_time}%')]
 
-    # avg flight time
-    _avg_flight_time = _df[:, 'AIR_TIME'].mean() # numerical value in minutes
-    # card to return
-    avg_flight_time = [dbc.CardHeader('Flights on Time'),
-                       dbc.CardBody(f'{_avg_flight_time}')] # card to return
 
-    return pct_flights_on_time, avg_flight_time
+    return None, None, None, bar_plot
 
 
 # Run the app/dashboard
