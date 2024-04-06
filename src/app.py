@@ -88,24 +88,24 @@ mock_data = {
 
 graph_avg_delay_by_carrier = html.Div([
     html.P('Average delay by carrier'),
-    dvc.Vega(id='bar', spec={})
+    dvc.Vega(id='bar', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 # graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
 
 graph_number_unique_flights = html.Div([
     html.P('Number of unique flights'), 
-    dvc.Vega(id='stacked_plot', spec={})
+    dvc.Vega(id='stacked_plot', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 # graph_number_unique_flights = dvc.Vega(id='stacked_plot', spec={})
 
 graph_map = html.Div([
     html.P('Map'),
-    dvc.Vega(id='map_plot', spec={})
+    dvc.Vega(id='map_plot', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 
 graph_count_by_delay = html.Div([
     html.P('Probability of Flight Delays'),
-    dvc.Vega(id='hist', spec={})
+    dvc.Vega(id='hist', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 
 
@@ -161,7 +161,7 @@ def __avg_delay(delay_times: np.ndarray) -> float:
   
 def plot_stacked(df):
     _filtered_df = df.copy()
-    _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name()
+    _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name().apply(lambda x: x[:3])
     plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE_CODE'])
                                .size()
                                .reset_index(name='FLIGHT_COUNT'))
@@ -171,8 +171,8 @@ def plot_stacked(df):
         color='AIRLINE_CODE:N',  # Nominal data
         tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
     ).properties(
-        width=350,
-        height=350,
+        width='container', 
+        height='container',
         title='Count of Unique Flights by Day of the Week'
     ).configure_axis(
         labelAngle=0  # Adjust label angle if necessary
@@ -188,8 +188,8 @@ def _plot_bar_plot(df):
         color=alt.Color('AIRLINE', legend=None),  # Optional color encoding by airline_name
         tooltip=['AIRLINE', 'ARR_DELAY']
         ).properties(
-            width=500,
-            height=400,
+        width='container', 
+        height='container',
         ).to_dict(format = "vega")
     return chart
 
@@ -205,8 +205,8 @@ def _plot_hist_plot(df):
         x=alt.X('ARR_DELAY:Q', bin=alt.Bin(step=30), title='Delay (minutes)'),
         y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Total Flights')
     ).properties(
-            width=400,
-            height=400,
+        width='container', 
+        height='container'
     ).to_dict()
 
 def _plot_map(origin, destination, cities_lat_long):
@@ -244,8 +244,8 @@ def _plot_map(origin, destination, cities_lat_long):
         fill='lightgray',
         stroke='white'
     ).properties(
-        width=400,
-        height=300
+        width='container', 
+        height='container',
     ).project('albersUsa')
 
     # Plot points
