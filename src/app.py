@@ -357,7 +357,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     # average delay
     _avg_delay = __avg_delay(_df.loc[:, 'ARR_DELAY'].to_numpy())
     avg_delay = [dbc.CardHeader('Average Delay'),
-                 dbc.CardBody(f'{int(_avg_delay)}')] # card to return
+                 dbc.CardBody(f'{int(_avg_delay)}min')] # card to return
 
     bar_plot = _plot_bar_plot(_df)
     hist_plot = _plot_hist_plot(_df)
