@@ -36,7 +36,7 @@ all_dest = df['DEST_CITY'].unique()
 
 global_widgets = [
     html.H1('FlightFinder'),
-    html.P('Which airline has the smallest delays for your route?'),
+    html.H5('Which airline has the smallest delays for your route?'),
     html.Br(),
     html.Label('Years'),
     dcc.RangeSlider(
@@ -55,7 +55,8 @@ global_widgets = [
         options=all_origin,
         value='Atlanta, GA',
         multi=False,
-        # placeholder='Select a city...'
+        style={'color': "black"}
+       
     ),
     html.Br(),
     html.Label('Destination'),
@@ -64,7 +65,7 @@ global_widgets = [
         options=all_dest,
         value='Denver, CO',
         multi=False,
-        # placeholder='Select a city...'
+        style={'color': "black"}
     )
 ]
 
@@ -80,38 +81,33 @@ cards = dbc.Row([
     dbc.Col(card_average_delay, md=4)
 ])
 
-mock_data = {
-    'x': [1, 2, 3, 4, 5],
-    'y': [10, 20, 30, 40, 50]
-}
-
 
 graph_avg_delay_by_carrier = html.Div([
-    html.P('Average delay by carrier'),
+    html.H6('Average delay by carrier'),
     dvc.Vega(id='bar', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 # graph_avg_delay_by_carrier = dvc.Vega(id='bar', spec={})
 
 graph_number_unique_flights = html.Div([
-    html.P('Number of unique flights'), 
+    html.H6('Number of unique flights'), 
     dvc.Vega(id='stacked_plot', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 # graph_number_unique_flights = dvc.Vega(id='stacked_plot', spec={})
 
 graph_map = html.Div([
-    html.P('Map'),
+    html.H6('Map'),
     dvc.Vega(id='map_plot', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 
 graph_count_by_delay = html.Div([
-    html.P('Probability of Flight Delays'),
+    html.H6('Probability of Flight Delays'),
     dvc.Vega(id='hist', spec={}, style={'width': '100%', 'height': '70%'})
 ])
 
 
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(global_widgets, md=4, style={'marginTop': 20}),
+        dbc.Col(global_widgets, md=4, style={'padding': 40, 'color': 'white', 'backgroundColor': 'rgb(25, 135, 140)', 'boxShadow': "rgba(0, 0, 0, 0.24) 0px 3px 8px" }),
         dbc.Col([
             dbc.Row([
                 dbc.Col(cards, md=12, style={'marginTop': 20})
@@ -126,7 +122,7 @@ app.layout = dbc.Container([
                     dbc.Row([graph_count_by_delay], style={'flex': '1', "padding": "10px"})
                 ], md=6, style={"display": "flex", "flexDirection": "column", "gap": "10px"})
             ], style={'display': 'flex', 'flexDirection': 'row', 'flex': '1'})
-        ], md=8, style={'display': 'flex', 'flexDirection': 'column', 'height': '100vh'})
+        ], md=8, style={'display': 'flex', 'flexDirection': 'column', 'height': '100vh', "paddingLeft": "40px"})
     ]),
     dbc.Row([
         dbc.Col(html.Div([
@@ -171,12 +167,13 @@ def __avg_delay(delay_times: np.ndarray) -> float:
     return 0
 
   
-def plot_stacked(df):
+def _plot_stacked(df):
     _filtered_df = df.copy()
     _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name().apply(lambda x: x[:3])
+    _filtered_df['FLIGHT_ID'] = _filtered_df['AIRLINE'] + '-' + _filtered_df['AIRLINE_CODE']
     plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE_CODE'])
-                               .size()
-                               .reset_index(name='FLIGHT_COUNT'))
+                               .agg(FLIGHT_COUNT=('FLIGHT_ID', 'nunique'))
+                               .reset_index())
     chart = alt.Chart(plot_data).mark_bar().encode(
         x='DAY_OF_WEEK:O',  # Ordinal data
         y='FLIGHT_COUNT:Q',  # Quantitative data
@@ -184,8 +181,7 @@ def plot_stacked(df):
         tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
     ).properties(
         width='container', 
-        height='container',
-        title='Count of Unique Flights by Day of the Week'
+        height='container'
     ).configure_axis(
         labelAngle=0  # Adjust label angle if necessary
     ).to_dict(format = "vega")
@@ -365,7 +361,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
 
     bar_plot = _plot_bar_plot(_df)
     hist_plot = _plot_hist_plot(_df)
-    stacked_bar_plot = plot_stacked(_df)
+    stacked_bar_plot = _plot_stacked(_df)
     map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lat_long)
 
     return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot, map_plot
@@ -373,4 +369,4 @@ def cb(origin_dropdown, dest_dropdown, year_range):
   
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run_server(debug = True, host = '127.0.0.1')
+    app.run_server()
