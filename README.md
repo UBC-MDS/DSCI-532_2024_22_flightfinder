@@ -21,6 +21,8 @@ Dive into our dashboard [here](https://dsci-532-2024-22-flightfinder.onrender.co
 
 Interested in contributing to FlightFinder? We welcome developers who are eager to help us enhance this platform. Here's how you can get started:
 
+![Alt Text](img/demo.gif)
+
 ### Running the App Locally
 
 1. Clone the repository:
