@@ -159,12 +159,13 @@ def __avg_delay(delay_times: np.ndarray) -> float:
     return 0
 
   
-def plot_stacked(df):
+def _plot_stacked(df):
     _filtered_df = df.copy()
     _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name().apply(lambda x: x[:3])
+    _filtered_df['FLIGHT_ID'] = _filtered_df['AIRLINE'] + '-' + _filtered_df['AIRLINE_CODE']
     plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE_CODE'])
-                               .size()
-                               .reset_index(name='FLIGHT_COUNT'))
+                               .agg(FLIGHT_COUNT=('FLIGHT_ID', 'nunique'))
+                               .reset_index())
     chart = alt.Chart(plot_data).mark_bar().encode(
         x='DAY_OF_WEEK:O',  # Ordinal data
         y='FLIGHT_COUNT:Q',  # Quantitative data
@@ -353,7 +354,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
 
     bar_plot = _plot_bar_plot(_df)
     hist_plot = _plot_hist_plot(_df)
-    stacked_bar_plot = plot_stacked(_df)
+    stacked_bar_plot = _plot_stacked(_df)
     map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lat_long)
 
     return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot, map_plot
