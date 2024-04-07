@@ -7,3 +7,4 @@ pandas==2.2.*
 vega-datasets==0.9.*
 vegafusion==1.6.6
 vegafusion-python-embed==1.6.6
+vl-convert-python>=1.3.0
