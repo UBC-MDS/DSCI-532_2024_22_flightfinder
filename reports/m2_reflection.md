@@ -22,6 +22,8 @@ In our initial proposal we proposed a tab that allows the user to see the raw da
 
 ## Limitations and potential future improvements
 
+The main limitation is that our dashboard is currently extremely slow. This is likely due to the size of the dataframe. We plan to rectify this by paring down the dataset and implementing faster filtering. 
+
 One of the current limitations of the app is that it does not allow a user to select an individual flight. We aim to add tab enabling the user to see the underlying datatables and examine individual flights. 
 
 Another limitation is that some of the visualizations are underdeveloped. In particular, we aim to improve our map with further contextual information. We also want to make sure that the number of unique flights and probability of flight delay columns are as useful as possible. We could implement a link between the average delay by carrier column and the two other bar charts as a filtering mechanism.
