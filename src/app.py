@@ -66,7 +66,19 @@ global_widgets = [
         value='Denver, CO',
         multi=False,
         style={'color': "black"}
-    )
+    ),
+    html.Div([
+            html.P("This Dash app was developed by Team 22 to provide insights into delay times of flights."),
+            html.P(["Check out the source code on ", html.A("GitHub", href="https://github.com/UBC-MDS/DSCI-532_2024_22_flightfinder", target="_blank")]),
+            html.P("Last updated: April 7, 2024")
+        ], style={
+            'textAlign': 'center',
+            'padding': '20px',
+            'fontSize': '12px',
+            'paddingTop': '40px',
+    })
+
+
 ]
 
 # Cards
@@ -123,19 +135,7 @@ app.layout = dbc.Container([
                 ], md=6, style={"display": "flex", "flexDirection": "column", "gap": "10px"})
             ], style={'display': 'flex', 'flexDirection': 'row', 'flex': '1'})
         ], md=8, style={'display': 'flex', 'flexDirection': 'column', 'height': '100vh', "paddingLeft": "40px"})
-    ]),
-    dbc.Row([
-        dbc.Col(html.Div([
-            html.P("This Dash app was developed by Team 22 to provide insights into delay times of flights."),
-            html.P(["Check out the source code on ", html.A("GitHub", href="https://github.com/UBC-MDS/DSCI-532_2024_22_flightfinder", target="_blank")]),
-            html.P("Last updated: April 7, 2024")
-        ], style={
-            'backgroundColor': '#f8f9fa',
-            'textAlign': 'center',
-            'padding': '20px',
-            'fontSize': '12px'
-        }), md=12)  # Ensure footer spans the width of the page
-    ], style={'marginTop': '20px'})
+    ])
 ], fluid=True)
 
 
@@ -369,4 +369,4 @@ def cb(origin_dropdown, dest_dropdown, year_range):
   
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=False)
