@@ -5,3 +5,5 @@ dash-vega-components==0.9.*
 altair==5.3.*
 pandas==2.2.*
 vega-datasets==0.9.*
+vegafusion==1.5.*
+vegafusion-python-embed>=1.5.*
