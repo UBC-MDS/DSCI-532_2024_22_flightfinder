@@ -5,7 +5,7 @@ import dash_vega_components as dvc
 import pandas as pd
 from typing import Tuple
 import altair as alt
-
+from datetime import date
 from vega_datasets import data
 alt.data_transformers.enable('vegafusion')
 cities = pd.read_csv('data/raw/updated_usa_airports.csv')
