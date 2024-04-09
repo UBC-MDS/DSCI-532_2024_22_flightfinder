@@ -6,7 +6,6 @@ import pandas as pd
 from typing import Tuple
 import altair as alt
 
-
 # Initiatlize the app
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -23,6 +22,10 @@ df = pd.read_csv('data/processed/data.gzip', compression='gzip',
 
 all_origin = df['ORIGIN_CITY'].unique()
 all_dest = df['DEST_CITY'].unique()
+
+df['year'] = pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year
+df.set_index(['ORIGIN_CITY', 'DEST_CITY', 'year'], inplace=True)
+
 
 # Layout
 
@@ -214,15 +217,9 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     # temporarily disable multi dest
     if isinstance(dest_dropdown, list):
         dest_dropdown = dest_dropdown[0]
-    msk = ((df['ORIGIN_CITY'] == origin_dropdown)
-           & (df['DEST_CITY'] == dest_dropdown)
-           & (pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year >= year_range[0])
-           & (pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year <= year_range[1]))
 
-    _df = df.loc[msk, :]
-    bar_plot = _plot_bar_plot(_df)
-    hist_plot = _plot_hist_plot(_df)
-
+    _df = df.loc[(origin_dropdown, dest_dropdown, year_range), :].copy()
+    _df.reset_index(inplace=True)
 
     # flights on time
     pct_flights_on_time = __pct_on_time_calc(_df.loc[:, 'ARR_DELAY'].to_numpy())
