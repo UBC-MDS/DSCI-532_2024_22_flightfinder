@@ -7,5 +7,7 @@ dependencies:
     - dash-bootstrap-components
     - plotly
     - pip
-pip:
-    - dash-vega-components
+    - pandas
+    - altair
+    - pip:
+        - dash-vega-components
