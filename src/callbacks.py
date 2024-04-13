@@ -9,6 +9,7 @@ from src.components.charts import plot_stacked, plot_bar_plot, plot_hist_plot
 from src.components.map import plot_map
 
 
+
 @callback(
     Output('dest_dropdown', 'options'),
     Input('origin_dropdown', 'value')
