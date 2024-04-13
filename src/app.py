@@ -1,16 +1,8 @@
-import numpy as np
-from dash import Dash, html, dcc, Input, Output, callback
+from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
-import pandas as pd
-from typing import Tuple
-import altair as alt
-from datetime import date
-from vega_datasets import data
-from data import df, all_origin, all_dest
+from data import all_origin, all_dest
 import callbacks
-alt.data_transformers.enable('vegafusion')
-
 
 # cities = pd.read_csv('data/raw/updated_usa_airports.csv')
 # cities_lat_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()

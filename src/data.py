@@ -1,5 +1,4 @@
 import pandas as pd
-import altair as alt
 
 df = pd.read_csv('data/processed/data.gzip', compression='gzip',
                  usecols=['ORIGIN_CITY',
