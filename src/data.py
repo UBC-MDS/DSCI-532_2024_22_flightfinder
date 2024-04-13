@@ -1,4 +1,5 @@
 import pandas as pd
+import altair as alt
 
 df = pd.read_csv('data/processed/data.gzip', compression='gzip',
                  usecols=['ORIGIN_CITY',
@@ -15,3 +16,7 @@ all_dest = df['DEST_CITY'].unique()
 
 df['year'] = pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year
 df.set_index(['ORIGIN_CITY', 'DEST_CITY', 'year'], inplace=True)
+
+
+cities = pd.read_csv('data/raw/updated_usa_airports.csv')
+cities_lat_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
