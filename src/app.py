@@ -7,6 +7,10 @@ from typing import Tuple
 import altair as alt
 from datetime import date
 from vega_datasets import data
+
+from data import df, all_origin, all_dest
+
+
 alt.data_transformers.enable('vegafusion')
 cities = pd.read_csv('data/raw/updated_usa_airports.csv')
 cities_lat_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
@@ -15,21 +19,6 @@ cities_lat_long = cities.set_index('city')[['latitude', 'longitude']].apply(tupl
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-df = pd.read_csv('data/processed/data.gzip', compression='gzip',
-                 usecols=['ORIGIN_CITY',
-                          'DEST_CITY',
-                          'ARR_DELAY',
-                          'FL_DATE',
-                          'AIR_TIME',
-                          'AIRLINE',
-                          'AIRLINE_CODE',
-                          'AIRLINE'])
-
-all_origin = df['ORIGIN_CITY'].unique()
-all_dest = df['DEST_CITY'].unique()
-
-df['year'] = pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year
-df.set_index(['ORIGIN_CITY', 'DEST_CITY', 'year'], inplace=True)
 
 
 # Layout
