@@ -64,19 +64,31 @@ def cb(origin_dropdown, dest_dropdown, year_range):
 
     # flights on time
     pct_flights_on_time = pct_on_time_calc(_df.loc[:, 'ARR_DELAY'].to_numpy())
-    pct_flights_on_time = [dbc.CardHeader('Flights on Time'),
-                           dbc.CardBody(f'{pct_flights_on_time:.2f}%')]
+    pct_flights_on_time = [dbc.CardHeader('Flights on Time', style={'backgroundColor': 'rgb(25, 135, 140)',
+                                                                    'color': 'white',
+                                                                    'textAlign': 'center',
+                                                                    'fontSize': '20px'}),
+                           dbc.CardBody(f'{int(pct_flights_on_time)}%', style={'textAlign': 'center',
+                                                                               'fontSize': '40px'})]
 
     # avg flight time
     f_hrs, f_mins = avg_flight_time(_df.loc[:, 'AIR_TIME'].to_numpy()) # numerical value in minutes
     # card to return
-    _avg_flight_time = [dbc.CardHeader('Average Flight Time'),
-                       dbc.CardBody(f'{f_hrs}h {f_mins}min')] # card to return
+    _avg_flight_time = [dbc.CardHeader('Average Flight Time', style={'backgroundColor': 'rgb(25, 135, 140)',
+                                                                     'color': 'white',
+                                                                     'textAlign': 'center',
+                                                                     'fontSize': '20px'}),
+                       dbc.CardBody(f'{f_hrs}h {f_mins}min', style={'textAlign': 'center',
+                                                                    'fontSize': '40px'})] # card to return
 
     # average delay
     tmp_avg_delay = avg_delay(_df.loc[:, 'ARR_DELAY'].to_numpy())
-    _avg_delay = [dbc.CardHeader('Average Delay'),
-                 dbc.CardBody(f'{int(tmp_avg_delay)}min')] # card to return
+    _avg_delay = [dbc.CardHeader('Average Delay', style={'backgroundColor': 'rgb(25, 135, 140)',
+                                                         'color': 'white',
+                                                         'textAlign': 'center',
+                                                         'fontSize': '20px'}),
+                 dbc.CardBody(f'{int(tmp_avg_delay)}min', style={'textAlign': 'center',
+                                                                 'fontSize': '40px'})] # card to return
 
     bar_plot = plot_bar_plot(_df)
     hist_plot = plot_hist_plot(_df)
