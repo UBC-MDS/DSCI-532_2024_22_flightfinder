@@ -341,7 +341,11 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     if isinstance(dest_dropdown, list):
         dest_dropdown = dest_dropdown[0]
 
-    _df = df.loc[(origin_dropdown, dest_dropdown, year_range), :].copy()
+    origin = origin_dropdown if origin_dropdown is not None else slice(None)
+    destination = dest_dropdown if dest_dropdown is not None else slice(None)
+    year = year_range if year_range is not None else slice(None)
+
+    _df = df.loc[(origin, destination, year), :].copy()
     _df.reset_index(inplace=True)
 
     # flights on time
@@ -360,9 +364,15 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     avg_delay = [dbc.CardHeader('Average Delay'),
                  dbc.CardBody(f'{int(_avg_delay)}min')] # card to return
 
-    bar_plot = _plot_bar_plot(_df)
-    hist_plot = _plot_hist_plot(_df)
-    stacked_bar_plot = _plot_stacked(_df)
+    if origin_dropdown is not None and dest_dropdown is not None:
+        bar_plot = _plot_bar_plot(_df)
+        hist_plot = _plot_hist_plot(_df)
+        stacked_bar_plot = _plot_stacked(_df)
+    else:
+        bar_plot = None
+        hist_plot = None
+        stacked_bar_plot = None
+
     map_plot = _plot_map(origin_dropdown, dest_dropdown, cities_lat_long)
 
     return pct_flights_on_time, avg_flight_time, avg_delay, bar_plot, stacked_bar_plot, hist_plot, map_plot
@@ -370,4 +380,4 @@ def cb(origin_dropdown, dest_dropdown, year_range):
   
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True, host='127.0.0.1')
