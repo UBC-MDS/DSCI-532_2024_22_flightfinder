@@ -1,7 +1,7 @@
 from dash import Input, Output, callback
 import dash_bootstrap_components as dbc
 import altair as alt
-from data import df, cities_lat_long
+from src.data import df, cities_lat_long
 alt.data_transformers.enable('vegafusion')
 
 from src.components.cards import pct_on_time_calc, avg_flight_time, avg_delay
