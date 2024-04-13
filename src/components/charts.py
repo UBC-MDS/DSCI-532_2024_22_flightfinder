@@ -1,6 +1,7 @@
 import pandas as pd
 import altair as alt
 
+SCHEME = 'viridis'
 
 def plot_stacked(df):
 
@@ -13,7 +14,7 @@ def plot_stacked(df):
     chart = alt.Chart(plot_data).mark_bar().encode(
         x='DAY_OF_WEEK:O',  # Ordinal data
         y='FLIGHT_COUNT:Q',  # Quantitative data
-        color='AIRLINE_CODE:N',  # Nominal data
+        color=alt.Color('AIRLINE_CODE:N', scale=alt.Scale(scheme=SCHEME)),  # Nominal data
         tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
     ).properties(
         width='container', 
@@ -29,7 +30,7 @@ def plot_bar_plot(df):
     chart = alt.Chart(average_delay).mark_bar().encode(
         y=alt.Y('AIRLINE', sort=alt.EncodingSortField(field='ARR_DELAY', order='descending')),
         x=alt.X('ARR_DELAY', title='Average Delay (minutes)'),
-        color=alt.Color('AIRLINE', legend=None),  # Optional color encoding by airline_name
+        color=alt.Color('ARR_DELAY', legend=None, scale=alt.Scale(scheme=SCHEME)),  # Optional color encoding by airline_name
         tooltip=['AIRLINE', 'ARR_DELAY']
         ).properties(
         width='container', 
