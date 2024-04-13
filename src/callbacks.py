@@ -5,8 +5,9 @@ from src.data import df, cities_lat_long
 alt.data_transformers.enable('vegafusion')
 
 from src.components.cards import pct_on_time_calc, avg_flight_time, avg_delay
-from src.components.charts import plot_stacked, plot_bar_plot, plot_hist_plot
+from src.components.charts import plot_stacked, plot_bar_plot, plot_hist_plot  
 from src.components.map import plot_map
+
 
 
 @callback(

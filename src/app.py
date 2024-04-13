@@ -45,15 +45,19 @@ global_widgets = [
         multi=False,
         style={'color': "black"}
     ),
-    html.Div([
-            html.P("This Dash app was developed by Team 22 to provide insights into delay times of flights."),
-            html.P(["Check out the source code on ", html.A("GitHub", href="https://github.com/UBC-MDS/DSCI-532_2024_22_flightfinder", target="_blank")]),
-            html.P("Last updated: April 7, 2024")
-        ], style={
-            'textAlign': 'center',
-            'padding': '20px',
-            'fontSize': '12px',
-            'paddingTop': '40px',
+    # html.Div(style={'flexGrow': '1'}),  # Spacer Div
+    html.Div(id='app-info', children=[
+        html.P("This Dash app was developed by Team 22 to provide insights into delay times of flights."),
+        html.P(["Check out the source code on ", html.A("GitHub", href="https://github.com/UBC-MDS/DSCI-532_2024_22_flightfinder", target="_blank")]),
+        html.P("Last updated: April 13, 2024")
+    ], style={
+        'position': 'fixed',
+        'bottom': '0',
+        'width': 'inherit',
+        'textAlign': 'left',
+        'padding': '20px',
+        'fontSize': '12px', # Match the sidebar background color
+        # 'borderTop': '1px solid #e8e8e8'  # Optional border for a visual separation
     })
 
 
