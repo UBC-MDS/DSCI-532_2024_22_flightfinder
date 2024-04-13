@@ -31,7 +31,7 @@ global_widgets = [
     dcc.Dropdown(
         id='origin_dropdown',
         options=all_origin,
-        value='Atlanta, GA',
+        value='Seattle, WA',
         multi=False,
         style={'color': "black"}
        
@@ -41,7 +41,7 @@ global_widgets = [
     dcc.Dropdown(
         id='dest_dropdown',
         options=all_dest,
-        value='Denver, CO',
+        value='Los Angeles, CA',
         multi=False,
         style={'color': "black"}
     ),
