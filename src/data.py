@@ -8,7 +8,8 @@ df = pd.read_csv('data/processed/data.gzip', compression='gzip',
                           'AIR_TIME',
                           'AIRLINE',
                           'AIRLINE_CODE',
-                          'AIRLINE'])
+                          'AIRLINE',
+                          'FL_NUMBER'])
 
 all_origin = df['ORIGIN_CITY'].unique()
 all_dest = df['DEST_CITY'].unique()
