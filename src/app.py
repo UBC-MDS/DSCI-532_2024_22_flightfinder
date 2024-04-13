@@ -294,31 +294,33 @@ def _plot_map(origin, destination, cities_lat_long):
 
 @app.callback(
     Output('dest_dropdown', 'options'),
-    Input('origin_dropdown', 'value')
-)
-def update_destination_options(selected_origin):
-    if not selected_origin:  # This checks if selected_origin is None or an empty string
-        # Reset to show all destinations
-        all_destinations = df['DEST_CITY'].unique()
-        return [{'label': dest, 'value': dest} for dest in all_destinations]
+    Input('origin_dropdown', 'value'),
+    Input('year_range', 'value'))
+def update_destination_options(selected_origin, year_range):
+    if not selected_origin:
+        # If no origin is selected, show all destinations available within the year range
+        years = range(year_range[0], year_range[1] + 1)
+        destinations = df.loc[(slice(None), slice(None), years), :].index.get_level_values('DEST_CITY').unique()
     else:
-        filtered_df = df[df['ORIGIN_CITY'] == selected_origin]
-        destinations = filtered_df['DEST_CITY'].unique()
-        return [{'label': dest, 'value': dest} for dest in destinations]
+        # Show destinations for selected origin within the year range
+        years = range(year_range[0], year_range[1] + 1)
+        destinations = df.loc[(selected_origin, slice(None), years), :].index.get_level_values('DEST_CITY').unique()
+    return [{'label': dest, 'value': dest} for dest in destinations]
 
 @app.callback(
     Output('origin_dropdown', 'options'),
-    Input('dest_dropdown', 'value')
-)
-def update_origin_options(selected_destination):
-    if not selected_destination:  # This checks if selected_destination is None or an empty string
-        # Reset to show all origins
-        all_origins = df['ORIGIN_CITY'].unique()
-        return [{'label': origin, 'value': origin} for origin in all_origins]
+    Input('dest_dropdown', 'value'),
+    Input('year_range', 'value'))
+def update_origin_options(selected_destination, year_range):
+    if not selected_destination:
+        # If no destination is selected, show all origins available within the year range
+        years = range(year_range[0], year_range[1] + 1)
+        origins = df.loc[(slice(None), slice(None), years), :].index.get_level_values('ORIGIN_CITY').unique()
     else:
-        filtered_df = df[df['DEST_CITY'] == selected_destination]
-        origins = filtered_df['ORIGIN_CITY'].unique()
-        return [{'label': origin, 'value': origin} for origin in origins]
+        # Show origins for selected destination within the year range
+        years = range(year_range[0], year_range[1] + 1)
+        origins = df.loc[(slice(None), selected_destination, years), :].index.get_level_values('ORIGIN_CITY').unique()
+    return [{'label': origin, 'value': origin} for origin in origins]
 
 
 @callback(
@@ -368,4 +370,4 @@ def cb(origin_dropdown, dest_dropdown, year_range):
   
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True, host='127.0.0.1')
