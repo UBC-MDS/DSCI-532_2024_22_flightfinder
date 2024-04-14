@@ -19,11 +19,11 @@ global_widgets = [
     html.Label('Years'),
     dcc.RangeSlider(
         id='year_range',
-        min=2019,
+        min=2020,
         max=2023,
-        value=[2019, 2023],  # A list since it's a range slideer
+        value=[2020, 2023],  # A list since it's a range slideer
         step=1,  # The step between values
-        marks={i: str(i) for i in range(2019, 2024)},  # The marks on the slider
+        marks={i: str(i) for i in range(2020, 2024)},  # The marks on the slider
         tooltip={'always_visible': True, 'placement': 'bottom'}  # Show the current values
     ),
     html.Br(),
