@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv('data/processed/df.gzip', compression='gzip',
+df = pd.read_csv('data/processed/data.gzip', compression='gzip',
                  usecols=['ORIGIN_CITY',
                           'DEST_CITY',
                           'ARR_DELAY',
