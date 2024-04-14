@@ -7,7 +7,6 @@ df = pd.read_csv('data/processed/data.gzip', compression='gzip',
                           'FL_DATE',
                           'AIR_TIME',
                           'FL_NUMBER',
-                          'AIRLINE_CODE',
                           'AIRLINE'])
 
 df = df.astype({'ARR_DELAY': 'float32'})
