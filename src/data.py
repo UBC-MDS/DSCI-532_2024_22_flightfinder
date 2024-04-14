@@ -1,12 +1,12 @@
 import pandas as pd
 
-df = pd.read_csv('data/processed/data.gzip', compression='gzip',
+df = pd.read_csv('data/processed/df.gzip', compression='gzip',
                  usecols=['ORIGIN_CITY',
                           'DEST_CITY',
                           'ARR_DELAY',
                           'FL_DATE',
                           'AIR_TIME',
-                          'AIRLINE',
+                          'FL_NUMBER',
                           'AIRLINE_CODE',
                           'AIRLINE',
                           'FL_NUMBER'])

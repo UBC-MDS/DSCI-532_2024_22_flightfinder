@@ -7,9 +7,9 @@ def plot_stacked(df):
 
     _filtered_df = df.copy()
     _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name().apply(lambda x: x[:3])
-    _filtered_df['FLIGHT_ID'] = _filtered_df['AIRLINE'] + '-' + _filtered_df['AIRLINE_CODE']
+    # _filtered_df['FLIGHT_ID'] = _filtered_df['AIRLINE'] + '-' + _filtered_df['AIRLINE_CODE']
     plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE_CODE'])
-                               .agg(FLIGHT_COUNT=('FLIGHT_ID', 'nunique'))
+                               .agg(FLIGHT_COUNT=('FL_NUMBER', 'nunique'))
                                .reset_index())
     chart = alt.Chart(plot_data).mark_bar().encode(
         x='DAY_OF_WEEK:O',  # Ordinal data
