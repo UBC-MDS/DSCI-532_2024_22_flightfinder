@@ -63,8 +63,22 @@ def cb(origin_dropdown, dest_dropdown, year_range):
     destination = dest_dropdown if dest_dropdown is not None else slice(None)
     year = year_range if year_range is not None else slice(None)
 
-    _df = df.loc[(origin, destination, year), :].copy()
-    _df.reset_index(inplace=True)
+    # Define columns to load based on input conditions
+    if origin_dropdown is not None and dest_dropdown is not None:
+        # If specific origin and destination are provided, load all necessary data columns
+        necessary_columns = slice(None)  # This selects all columns
+    else:
+        # If not both are provided, just work with the index or no specific data columns needed
+        necessary_columns = []
+
+    # Load data from the DataFrame
+    if necessary_columns:
+        _df = df.loc[(origin, destination, year), necessary_columns].copy()
+        _df.reset_index(inplace=True)  # This might be necessary if you need to manipulate the index columns as data columns
+    else:
+        # Minimal load, assuming index information is self-sufficient for the required operation
+        _df = df.loc[(origin, destination, year)].copy()
+        _df.reset_index(inplace=True)
 
     # flights on time
     pct_flights_on_time = pct_on_time_calc(_df.loc[:, 'ARR_DELAY'].to_numpy())
