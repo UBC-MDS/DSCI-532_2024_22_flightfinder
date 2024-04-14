@@ -5,7 +5,7 @@ from src.data import df, cities_lat_long
 alt.data_transformers.enable('vegafusion')
 
 from src.components.cards import pct_on_time_calc, avg_flight_time, avg_delay
-from src.components.charts import plot_stacked, plot_bar_plot, plot_hist_plot  
+from src.components.charts import plot_stacked, plot_bar_plot, plot_hist_plot
 from src.components.map import plot_map
 
 
@@ -15,7 +15,7 @@ from src.components.map import plot_map
     Input('origin_dropdown', 'value')
 )
 def update_destination_options(selected_origin):
-    _df = df[['ORIGIN_CITY', 'DEST_CITY']].copy().reset_index()
+    _df = df[[]].copy().reset_index()
     if not selected_origin:  # This checks if selected_origin is None or an empty string
         # Reset to show all destinations
         all_destinations = _df['DEST_CITY'].unique()
@@ -30,7 +30,7 @@ def update_destination_options(selected_origin):
     Input('dest_dropdown', 'value')
 )
 def update_origin_options(selected_destination):
-    _df = df[['ORIGIN_CITY', 'DEST_CITY']].copy().reset_index()
+    _df = df[[]].copy().reset_index()
     if not selected_destination:  # This checks if selected_destination is None or an empty string
         # Reset to show all origins
         all_origins = _df['ORIGIN_CITY'].unique()
