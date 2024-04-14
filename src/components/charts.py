@@ -7,15 +7,15 @@ def plot_stacked(df):
 
     _filtered_df = df.copy()
     _filtered_df['DAY_OF_WEEK'] = pd.to_datetime(_filtered_df['FL_DATE']).dt.day_name().apply(lambda x: x[:3])
-    # _filtered_df['FLIGHT_ID'] = _filtered_df['AIRLINE'] + '-' + _filtered_df['AIRLINE_CODE']
-    plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE_CODE'])
+    day_order = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    plot_data = (_filtered_df.groupby(['DAY_OF_WEEK', 'AIRLINE'])
                                .agg(FLIGHT_COUNT=('FL_NUMBER', 'nunique'))
                                .reset_index())
     chart = alt.Chart(plot_data).mark_bar().encode(
-        x='DAY_OF_WEEK:O',  # Ordinal data
-        y='FLIGHT_COUNT:Q',  # Quantitative data
-        color=alt.Color('AIRLINE_CODE:N', scale=alt.Scale(scheme=SCHEME)),  # Nominal data
-        tooltip=['DAY_OF_WEEK', 'AIRLINE_CODE', 'FLIGHT_COUNT']
+        x=alt.X('DAY_OF_WEEK:O', axis=alt.Axis(title='Day of the Week'), sort=day_order),  # Ordinal data
+        y=alt.Y('FLIGHT_COUNT:Q', axis=alt.Axis(title='Number of Unique Flights')),  # Quantitative data
+        color=alt.Color('AIRLINE:N', scale=alt.Scale(scheme=SCHEME)),  # Nominal data
+        tooltip=['DAY_OF_WEEK', 'AIRLINE', 'FLIGHT_COUNT']
     ).properties(
         width='container', 
         height='container'
