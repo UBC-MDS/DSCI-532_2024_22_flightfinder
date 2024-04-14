@@ -112,7 +112,7 @@ app.layout = dbc.Container([
                     dbc.Row([graph_map], style={'flex': '1', "padding": "10px"})
                 ], md=6, style={"display": "flex", "flexDirection": "column", "gap": "10px"}),
                 dbc.Col([
-                    dbc.Row([graph_number_unique_flights], style={'flex': '1', "padding": "10px"}),
+                    dbc.Row([graph_number_unique_flights],style={'flex': '1', "padding": "10px"}),
                     dbc.Row([graph_count_by_delay], style={'flex': '1', "padding": "10px"})
                 ], md=6, style={"display": "flex", "flexDirection": "column", "gap": "10px"})
             ], style={'display': 'flex', 'flexDirection': 'row', 'flex': '1'})
@@ -124,4 +124,4 @@ app.layout = dbc.Container([
   
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=False, host='127.0.0.1')
