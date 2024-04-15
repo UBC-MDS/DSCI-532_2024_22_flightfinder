@@ -55,7 +55,6 @@ global_widgets = [
         'bottom': '0',
         'width': 'inherit',
         'textAlign': 'left',
-        'padding': '20px',
         'fontSize': '12px', # Match the sidebar background color
         # 'borderTop': '1px solid #e8e8e8'  # Optional border for a visual separation
     })
