@@ -9,6 +9,11 @@ import src.callbacks
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
+import base64
+
+# Encode the image for inline display
+encoded_image = base64.b64encode(open("img/airplane.png", "rb").read()).decode('ascii')
+
 
 # Global widgets
 
@@ -45,6 +50,11 @@ global_widgets = [
         multi=False,
         style={'color': "black"}
     ),
+    html.Br(),
+     html.Div(
+             html.Img(src='data:image/png;base64,{}'.format(encoded_image), style={'width': "65%", "opacity": 0.2}),
+             style={'width': "100%", "display": "flex", "justifyContent": "center", "paddingTop": "20px"}
+     ),
     # html.Div(style={'flexGrow': '1'}),  # Spacer Div
     html.Div(id='app-info', children=[
         html.P("This Dash app was developed by Team 22 to provide insights into delay times of flights."),
