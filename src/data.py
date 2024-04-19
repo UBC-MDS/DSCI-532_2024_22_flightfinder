@@ -1,22 +1,16 @@
 import pandas as pd
+import numpy as np
+import pickle
 
-df = pd.read_csv('data/processed/data.gzip', compression='gzip',
-                 usecols=['ORIGIN_CITY',
-                          'DEST_CITY',
-                          'ARR_DELAY',
-                          'FL_DATE',
-                          'AIR_TIME',
-                          'FL_NUMBER',
-                          'AIRLINE'])
+df = pd.read_parquet('data/processed/data.parquet')
 
-df = df.astype({'ARR_DELAY': 'float32'})
+with open('data/processed/all_origin.npy', 'rb') as f:
+    all_origin = np.load(f, allow_pickle=True)
+with open('data/processed/all_dest.npy', 'rb') as f:
+    all_dest = np.load(f, allow_pickle=True)
 
-all_origin = df['ORIGIN_CITY'].unique()
-all_dest = df['DEST_CITY'].unique()
+with open('data/processed/cities_lat_long', 'rb') as f:
+    cities_lat_long = pickle.load(f)
 
-df['year'] = pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year
-df.set_index(['ORIGIN_CITY', 'DEST_CITY', 'year'], inplace=True)
-
-
-cities = pd.read_csv('data/raw/updated_usa_airports.csv')
-cities_lat_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
+# cities = pd.read_csv('data/raw/updated_usa_airports.csv')
+# cities_lat_long = cities.set_index('city')[['latitude', 'longitude']].apply(tuple, axis=1).to_dict()
