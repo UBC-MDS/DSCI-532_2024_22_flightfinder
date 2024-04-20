@@ -9,7 +9,6 @@ df = pd.read_csv('data/raw/flights_sample_3m.csv',
                             'FL_DATE',
                             'AIR_TIME',
                             'AIRLINE',
-                            'AIRLINE_CODE',
                             'FL_NUMBER'])
 
 all_origin = df['ORIGIN_CITY'].unique()
