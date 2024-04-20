@@ -127,7 +127,7 @@ app.layout = dbc.Container([
             ], style={'minHeight': "20vh"}),
             dbc.Row([
                 dbc.Col([
-                    dbc.Row([graph_map], style={'flex': '1', "padding": "0"}),
+                    dbc.Row([graph_map], style={'flex': '1', "paddingBottom": "10px"}),
                     dbc.Row([graph_avg_delay_by_carrier], style={'flex': '1', "padding": "10px"}),
                 ], md=6, style={"display": "flex", "flexDirection": "column", "gap": "10px"}),
                 dbc.Col([

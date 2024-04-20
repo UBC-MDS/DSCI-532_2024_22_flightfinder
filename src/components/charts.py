@@ -52,9 +52,9 @@ def plot_hist_plot(df):
     cumulative_chart = base_chart.transform_window(
         cumulative_pct='sum(pct)',
         sort=[{'field': 'ARR_DELAY', 'order': 'descending'}]  # Cumulative from highest to lowest
-    ).mark_bar().encode(
+    ).mark_bar(color="rgb(25, 135, 140)").encode(
         x=alt.X('ARR_DELAY:Q', title='Delay (minutes)'),
-        y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Total Flights'),
+        y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Flights'),
         tooltip=[
             alt.Tooltip('ARR_DELAY:Q', title='Delay (minutes)'),
             alt.Tooltip('cumulative_pct:Q', format='.0%', title='Probability of Being Delayed by at Least This Amount')
