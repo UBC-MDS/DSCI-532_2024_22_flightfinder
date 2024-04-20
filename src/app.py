@@ -19,7 +19,7 @@ encoded_image = base64.b64encode(open("img/airplane.png", "rb").read()).decode('
 
 global_widgets = [
     html.H1('FlightFinder'),
-    html.H5('Which airline has the smallest delays for your route?'),
+    html.H5('Which airline has the shortest delays for your route?'),
     html.Br(),
     html.Label('Years'),
     dcc.RangeSlider(
