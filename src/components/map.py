@@ -45,9 +45,9 @@ def plot_map(origin, destination, cities_lat_long):
     # Plot points
     points = alt.Chart(points_df).mark_point(
         filled=True,
-        color='cyan',
+        color='rgba(25, 135, 140)',
         size=50,
-        shape='square',
+        shape='circle',
         stroke='rgba(25, 135, 140)',
         strokeWidth=1
     ).encode(

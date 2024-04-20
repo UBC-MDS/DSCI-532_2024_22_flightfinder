@@ -26,7 +26,7 @@ def plot_stacked(df):
 def plot_bar_plot(df):
     average_delay = df[['AIRLINE', 'ARR_DELAY']].groupby('AIRLINE', as_index=False).mean(numeric_only=True)
     chart = alt.Chart(average_delay).mark_bar().encode(
-        y=alt.Y('AIRLINE', sort=alt.EncodingSortField(field='ARR_DELAY', order='descending')),
+        y=alt.Y('AIRLINE', sort=alt.EncodingSortField(field='ARR_DELAY', order='descending'), title=''),
         x=alt.X('ARR_DELAY', title='Average Delay (minutes)'),
         color=alt.Color('ARR_DELAY', legend=None, scale=alt.Scale(scheme=SCHEME)),  # Optional color encoding by airline_name
         tooltip=['AIRLINE', 'ARR_DELAY']
