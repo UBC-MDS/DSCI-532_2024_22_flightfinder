@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
 from src.data import all_origin, all_dest
 import src.callbacks
+from datetime import datetime
 
 
 # Initiatlize the app
@@ -62,7 +63,7 @@ global_widgets = [
         html.P("Credits: Rory White, Allan Lee, Vincent Zhang and Lily Tao"),
         html.P("Data: US Department of Transportation, Patrick Zelazko"),
         html.P(["Check out the source code on ", html.A("GitHub", href="https://github.com/UBC-MDS/DSCI-532_2024_22_flightfinder", target="_blank", style={'color': 'white'})]),
-        html.P("Last updated: April 13, 2024")
+        html.P("Last updated: {}".format(datetime.now().strftime('%B %d, %Y')))
     ], style={
         'position': 'absolute',
         'bottom': '0',
