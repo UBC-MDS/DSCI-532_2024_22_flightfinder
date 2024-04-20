@@ -32,7 +32,7 @@ Interested in contributing to FlightFinder? We welcome developers who are eager 
 ```pip install -r requirements.txt```
 
 3. Run the application:
-```python src/app.py```
+```python -m src.app```
 
 
 
