@@ -77,15 +77,23 @@ global_widgets = [
 
 # Cards
 
+
 card_flights_on_time = dbc.Card(id='flights_on_time')
 card_average_flight_time = dbc.Card(id='avg_flight_time')
 card_average_delay = dbc.Card(id='avg_delay')
 
-cards = dbc.Row([
+cards = dcc.Loading(
+        id="spinner",
+        children=[dbc.Row([
     dbc.Col(card_flights_on_time, md=4),
     dbc.Col(card_average_flight_time, md=4),
     dbc.Col(card_average_delay, md=4)
-])
+])],
+        type="cube",
+        fullscreen=True,
+        color="white",
+        style={"paddingTop": "50px", "backgroundColor": "rgb(25, 135, 140)"}
+),
 
 
 graph_avg_delay_by_carrier = html.Div([
