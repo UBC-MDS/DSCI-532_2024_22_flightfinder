@@ -1,8 +1,8 @@
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
-from src.data import all_origin, all_dest
-import src.callbacks
+from data import all_origin, all_dest
+import callbacks
 
 
 # Initiatlize the app
@@ -135,4 +135,4 @@ app.layout = dbc.Container([
   
 # Run the app/dashboard
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=False, host='127.0.0.1')
