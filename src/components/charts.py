@@ -40,15 +40,30 @@ def plot_bar_plot(df):
 
 def plot_hist_plot(df):
     alt.data_transformers.enable('default')
-    return alt.Chart(df).transform_joinaggregate(
-        total='count(*)'
+    bind = alt.selection_interval(bind='scales')
+    
+    base_chart = alt.Chart(df).transform_joinaggregate(
+        total='count(*)',  # Compute total number of flights once
     ).transform_calculate(
-        pct='1 / datum.total'
+        pct='1 / datum.total'  # Calculate the reciprocal of the total count
+    )
+    
+    # Create a cumulative sum of percentages for calculating delays by at least this amount
+    cumulative_chart = base_chart.transform_window(
+        cumulative_pct='sum(pct)',
+        sort=[{'field': 'ARR_DELAY', 'order': 'descending'}]  # Cumulative from highest to lowest
     ).mark_bar().encode(
-        x=alt.X('ARR_DELAY:Q', bin=alt.Bin(step=30), title='Delay (minutes) on Log Scale', 
-                scale=alt.Scale(type='log')),  # Updated title to indicate log scale
-        y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Total Flights')
+        x=alt.X('ARR_DELAY:Q', title='Delay (minutes)'),
+        y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Total Flights'),
+        tooltip=[
+            alt.Tooltip('ARR_DELAY:Q', title='Delay (minutes)'),
+            alt.Tooltip('cumulative_pct:Q', format='.0%', title='Probability of Being Delayed by at Least This Amount')
+        ]
     ).properties(
         width='container', 
         height='container'
-    ).to_dict()
+    ).add_selection(
+        bind
+    )
+    return cumulative_chart.to_dict()
+
