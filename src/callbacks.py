@@ -90,7 +90,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
                                                                     'textAlign': 'center',
                                                                     'fontSize': '20px'}),
                            dbc.CardBody(f'{int(pct_flights_on_time)}%', style={'textAlign': 'center',
-                                                                               'fontSize': '40px'})]
+                                                                               'fontSize': '35px'})]
 
     # avg flight time
     f_hrs, f_mins = avg_flight_time(_df.loc[:, 'AIR_TIME'].to_numpy()) # numerical value in minutes
@@ -100,7 +100,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
                                                                      'textAlign': 'center',
                                                                      'fontSize': '20px'}),
                        dbc.CardBody(f'{f_hrs}h {f_mins}min', style={'textAlign': 'center',
-                                                                    'fontSize': '40px'})] # card to return
+                                                                    'fontSize': '35px'})] # card to return
 
     # average delay
     tmp_avg_delay = avg_delay(_df.loc[:, 'ARR_DELAY'].to_numpy())
@@ -109,7 +109,7 @@ def cb(origin_dropdown, dest_dropdown, year_range):
                                                          'textAlign': 'center',
                                                          'fontSize': '20px'}),
                  dbc.CardBody(f'{int(tmp_avg_delay)}min', style={'textAlign': 'center',
-                                                                 'fontSize': '40px'})] # card to return
+                                                                 'fontSize': '35px'})] # card to return
 
     if origin_dropdown is not None and dest_dropdown is not None:
         bar_plot = plot_bar_plot(_df)
