@@ -1,5 +1,6 @@
-from dash import Input, Output, callback
+from dash import Input, Output, callback, State
 import dash_bootstrap_components as dbc
+from dash import callback_context
 import altair as alt
 from src.data import df, cities_lat_long
 alt.data_transformers.enable('vegafusion')
@@ -42,20 +43,38 @@ def update_origin_options(selected_destination):
         filtered_df = _df[_df['DEST_CITY'] == selected_destination]
         origins = filtered_df['ORIGIN_CITY'].unique()
         return [{'label': origin, 'value': origin} for origin in origins]
-
+    
 
 @callback(
-    Output('flights_on_time', 'children'),
-    Output('avg_flight_time', 'children'),
-    Output('avg_delay', 'children'),
-    Output('bar', 'spec'),
-    Output('stacked_plot', 'spec'),
-    Output('hist', 'spec'),
-    Output('map_plot', 'spec'),
-    Input('origin_dropdown', 'value'),
-    Input('dest_dropdown', 'value'),
-    Input('year_range', 'value')
+    [
+        Output('flights_on_time', 'children'),
+        Output('avg_flight_time', 'children'),
+        Output('avg_delay', 'children'),
+        Output('bar', 'spec'),
+        Output('stacked_plot', 'spec'),
+        Output('hist', 'spec'),
+        Output('map_plot', 'spec')
+    ],
+    [
+        Input('submit_button', 'n_clicks')
+    ],
+    [
+        State('origin_dropdown', 'value'),
+        State('dest_dropdown', 'value'),
+        State('year_range', 'value')
+    ]
 )
+def update_charts(n_clicks, origin_dropdown, dest_dropdown, year_range):
+    ctx = callback_context
+    if not ctx.triggered or ctx.triggered[0]['prop_id'] == 'submit_button.n_clicks' and n_clicks is None:
+        return cb(origin_dropdown, dest_dropdown, year_range)
+    elif ctx.triggered:
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        if trigger_id == 'submit_button':
+            return cb(origin_dropdown, dest_dropdown, year_range)
+
+    return [], [], [], None, None, None, None
+
 def cb(origin_dropdown, dest_dropdown, year_range):
 
     # temporarily disable multi dest

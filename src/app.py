@@ -51,6 +51,8 @@ global_widgets = [
         style={'color': "black"}
     ),
     html.Br(),
+    dbc.Button("Submit", id='submit_button', n_clicks=0, color="secondary"),
+    html.Br(),
      html.Div(
              html.Img(src='data:image/png;base64,{}'.format(encoded_image), style={'width': "65%", "opacity": 0.2}),
              style={'width': "100%", "display": "flex", "justifyContent": "center", "paddingTop": "20px"}
