@@ -38,6 +38,7 @@ def plot_bar_plot(df):
 
 
 
+
 def plot_hist_plot(df):
     alt.data_transformers.enable('default')
     return alt.Chart(df).transform_joinaggregate(
@@ -45,7 +46,8 @@ def plot_hist_plot(df):
     ).transform_calculate(
         pct='1 / datum.total'
     ).mark_bar().encode(
-        x=alt.X('ARR_DELAY:Q', bin=alt.Bin(step=30), title='Delay (minutes)'),
+        x=alt.X('ARR_DELAY:Q', bin=alt.Bin(step=30), title='Delay (minutes) on Log Scale', 
+                scale=alt.Scale(type='log')),  # Updated title to indicate log scale
         y=alt.Y('sum(pct):Q', axis=alt.Axis(format='.0%'), title='Percentage of Total Flights')
     ).properties(
         width='container', 
