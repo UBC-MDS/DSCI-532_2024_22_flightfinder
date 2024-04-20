@@ -23,6 +23,8 @@ df = df.astype({'ARR_DELAY': 'float32',
                 'FL_NUMBER': 'uint16',
                 'AIR_TIME': 'float32'})
 df['year'] = pd.DatetimeIndex(df['FL_DATE'].to_numpy()).year
+df['DAY_OF_WEEK'] = pd.to_datetime(df['FL_DATE']).dt.day_name().apply(lambda x: x[:3])
+df = df.drop('FL_DATE', axis=1)
 df.set_index(['ORIGIN_CITY', 'DEST_CITY', 'year'], inplace=True)
 
 df.to_parquet('data/processed/data.parquet')
