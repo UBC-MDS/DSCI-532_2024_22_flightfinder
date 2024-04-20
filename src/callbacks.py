@@ -7,10 +7,10 @@ alt.data_transformers.enable('vegafusion')
 from src.components.cards import pct_on_time_calc, avg_flight_time, avg_delay
 from src.components.charts import plot_stacked, plot_bar_plot, plot_hist_plot
 from src.components.map import plot_map
-import functools
+#import functools
 
 
-@functools.lru_cache()
+#@functools.lru_cache()
 @callback(
     Output('dest_dropdown', 'options'),
     Input('origin_dropdown', 'value')
@@ -27,7 +27,7 @@ def update_destination_options(selected_origin):
         return [{'label': dest, 'value': dest} for dest in destinations]
 
 
-@functools.lru_cache()
+#@functools.lru_cache()
 @callback(
     Output('origin_dropdown', 'options'),
     Input('dest_dropdown', 'value')
