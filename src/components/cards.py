@@ -13,7 +13,7 @@ def pct_on_time_calc(delay_times: np.ndarray) -> Tuple[int, float]:
 def avg_flight_time(flight_times: np.ndarray) -> Tuple[int, int]:
     if flight_times.size > 0:
         m = np.nanmean(flight_times)
-        if isinstance(m, float):
+        if not np.isnan(m):
             hrs = int(m // 60)
             mins = int(m % 60)
             return hrs, mins
