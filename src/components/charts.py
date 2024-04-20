@@ -4,7 +4,6 @@ import altair as alt
 SCHEME = 'viridis'
 
 def plot_stacked(df):
-    df['DAY_OF_WEEK'] = pd.to_datetime(df['FL_DATE']).dt.day_name().apply(lambda x: x[:3])
     day_order = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     plot_data = (df.groupby(['DAY_OF_WEEK', 'AIRLINE'])
                                .agg(FLIGHT_COUNT=('FL_NUMBER', 'nunique'))
